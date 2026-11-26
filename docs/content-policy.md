@@ -1,0 +1,2 @@
+# Política de conteúdo
+Cada recurso deve registrar título, autor, URL original, idioma, técnica, nível, licença ou permissão conhecida e data de verificação. Gratuito para assistir não significa livre para redistribuir. Prefira links e incorporações autorizadas; não copie aulas pagas, transcrições ou imagens sem autorização. Escreva explicações e exercícios próprios. Classifique receitas como estimadas, testadas ou verificadas, com condições de teste. Inclua segurança no uso de resina, aerógrafo e produtos seguindo instruções dos fabricantes.
