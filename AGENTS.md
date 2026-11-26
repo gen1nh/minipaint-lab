@@ -1,2 +1,8 @@
 # MiniPaint Lab — Agent guidelines
 Read DESIGN.md and ARCHITECTURE.md before changes. Keep features isolated; compose them in app. Domain functions must be pure and independent of React and storage. Use strict TypeScript, kebab-case files, PascalCase components. Prefer local state. Add dependencies only with justification and license review. Never execute unreviewed third-party skills. Test behavior, keyboard access, responsive layouts and error states. Run lint, typecheck, tests and build before merging once configured. Never claim a simulated paint recipe is physically verified. Credit sources and never redistribute unlicensed lessons. Update documentation with changes.
+
+## Release workflow
+Work on develop or feature branches, never commit individual changes directly to main. Batch related files into atomic commits. Open a PR to main only for a cohesive release; verify CI on the exact candidate before squash merge. Vercel automatic deployments are restricted to main. Do not bypass failed checks or publish while color-lab acceptance checks remain incomplete. Academy remains frozen until the color release is accepted.
+
+## Practical scope
+Reuse maintained, license-compatible open-source solutions before writing new algorithms. Keep Spectral.js and the existing perceptual distance unless a tested comparison demonstrates a practical improvement. Prefer simple, reproducible recipes and clear visual comparisons; do not invent physical accuracy scores or pigment measurements. No laboratory calibration requirement. Avoid catalog expansion without verified provenance and practical value.
