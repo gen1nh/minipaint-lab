@@ -13,7 +13,8 @@ for(const width of [390,1280]){
   await page.getByRole('button',{name:'Alternar tema'}).click();
   await page.screenshot({path:info.outputPath('mixer-light.png'),fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width+1);
-  await page.getByRole('button',{name:'Encontrar cores',exact:true}).click();
+  if(await page.getByRole('button',{name:'Menu principal'}).isVisible())await page.getByRole('button',{name:'Menu principal'}).click();
+ await page.getByRole('navigation').getByRole('button',{name:'Encontrar cores',exact:true}).click();
   await expect(page.getByRole('button',{name:'Buscar equivalentes e misturas'})).toBeEnabled();
   await page.getByRole('button',{name:'Buscar equivalentes e misturas'}).click();
   await expect(page.getByRole('heading',{name:'Tintas próximas'})).toBeVisible();
