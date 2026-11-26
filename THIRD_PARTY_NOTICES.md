@@ -3,3 +3,6 @@ Architecture inspiration: Bulletproof React, Alan Alickovic and contributors (MI
 
 ## Spectral.js
 Ronald van Wijnen © 2025, MIT. https://github.com/rvanwijnen/spectral.js — dependency pinned to 3.0.0; full notice in licenses/spectral.js.txt. API and license inspected upstream; package installation and tests pending.
+
+## Miniature Paints
+Commercial paint swatches imported from https://github.com/Arcturus5404/miniature-paints (Copyright 2022 Rick Fleuren, MIT). Full license: licenses/miniature-paints.txt. Each brand JSON records its original URL and blob SHA. Swatches are digital approximations, not certified measurements. Manufacturer names identify products, not endorsement.
