@@ -17,8 +17,9 @@ test('preserves the current recipe across navigation',async({page})=>{
  await page.getByRole('button',{name:'Abrir laboratório'}).click();
  await page.getByRole('button',{name:'Aumentar gotas da tinta 1'}).click();
  const recipe=await page.getByRole('textbox',{name:'Receita em texto'}).inputValue();
- await page.getByRole('button',{name:'Encontrar cores',exact:true}).click();
- await page.getByRole('button',{name:'Laboratório',exact:true}).click();
+ if(await page.getByRole('button',{name:'Menu principal'}).isVisible())await page.getByRole('button',{name:'Menu principal'}).click();
+ await page.getByRole('navigation').getByRole('button',{name:'Encontrar cores',exact:true}).click();
+ await page.getByRole('button',{name:'Misturar tintas',exact:true}).click();
  await expect(page.getByRole('textbox',{name:'Receita em texto'})).toHaveValue(recipe);
 });
 test('mobile mixer remains within the viewport',async({page})=>{
@@ -42,3 +43,5 @@ test('saved recipe survives reload and deletion requires confirmation',async({pa
  await page.getByRole('button',{name:'Excluir',exact:true}).click();
  await expect(page.getByText(/Receita de teste ·/)).toBeVisible();
 });
+
+test('home groups color tools and atelier lists saved recipes',async({page})=>{await page.goto('/');const nav=page.getByRole('navigation');await nav.getByRole('button',{name:'Laboratório de cores'}).click();await expect(nav.getByRole('button',{name:'Misturar tintas'})).toHaveCount(0);await nav.getByRole('button',{name:'Laboratório de cores'}).click();await expect(nav.getByRole('button',{name:'Misturar tintas'})).toBeVisible();await page.getByRole('button',{name:'Abrir ateliê'}).click();await expect(page.getByRole('heading',{name:'Meu ateliê'})).toBeVisible();await expect(page.getByRole('heading',{name:'Nenhuma receita salva'})).toBeVisible()});

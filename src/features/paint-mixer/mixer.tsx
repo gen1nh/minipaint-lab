@@ -6,11 +6,11 @@ import {mixPigments} from '../../domain/color/spectral-mix';
 import {RecipeExtras} from './recipe-extras';
 import {PrimerPreview} from './primer-preview';
 type Paint={id:number;name:string;brand:string;hex:string;drops:number;tintingStrength?:number};
-export function Mixer({initialPaints}:{initialPaints?:Omit<Paint,'id'>[]}={}){
+export function Mixer({initialPaints,initialThinner=0}:{initialPaints?:Omit<Paint,'id'>[];initialThinner?:number}={}){
  const [paints,setPaints]=useState<Paint[]>(initialPaints?.map((p,i)=>({...p,id:i+1}))??[{id:1,name:'Preto',brand:'Personalizada',hex:'#202020',drops:2},{id:2,name:'Vermelho',brand:'Personalizada',hex:'#b82d32',drops:5}]);
  const [nextId,setNextId]=useState((initialPaints?.length??2)+1);
  
- const [thinner,setThinner]=useState(initialPaints?0:3);
+ const [thinner,setThinner]=useState(initialPaints?initialThinner:3);
  const [factor,setFactor]=useState(2);
  const [feedback,setFeedback]=useState('');
  const result=calculateRecipe(paints,thinner);
