@@ -1,0 +1,1 @@
+export function mixRgb(a:string,b:string,ratio:number):string {if(!/^#[0-9a-f]{6}$/i.test(a)||!/^#[0-9a-f]{6}$/i.test(b)||!Number.isFinite(ratio)||ratio<0||ratio>1) throw new RangeError('Invalid color or ratio'); return '#'+[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-ratio)+parseInt(b.slice(i,i+2),16)*ratio).toString(16).padStart(2,'0')).join('');}
