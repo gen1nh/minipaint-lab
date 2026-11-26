@@ -1,0 +1,7 @@
+export type RecipePaint={name:string;brand:string;hex:string;drops:number};
+export type SavedRecipe={id:string;name:string;paints:RecipePaint[];thinner:number;hex:string};
+export function isSavedRecipe(x:unknown):x is SavedRecipe{
+ if(!x||typeof x!=='object')return false;
+ const r=x as SavedRecipe;
+ return typeof r.id==='string'&&typeof r.name==='string'&&typeof r.hex==='string'&&/^#[0-9a-f]{6}$/i.test(r.hex)&&Number.isSafeInteger(r.thinner)&&r.thinner>=0&&r.thinner<=10000&&Array.isArray(r.paints)&&r.paints.length>0&&r.paints.length<=100&&r.paints.every(p=>p&&typeof p.name==='string'&&typeof p.brand==='string'&&typeof p.hex==='string'&&/^#[0-9a-f]{6}$/i.test(p.hex)&&Number.isSafeInteger(p.drops)&&p.drops>=1&&p.drops<=10000);
+}
