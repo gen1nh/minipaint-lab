@@ -14,6 +14,6 @@ Instrument Sans Project Authors © 2022. The variable Latin WOFF2 is from the [G
 ## Wikipe-tan
 
 [Wikipe-tan full length.svg](https://commons.wikimedia.org/wiki/File:Wikipe-tan_full_length.svg) by Kasuga, vector redraw by Editor at Large, under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The [adapted SVG](src/features/cel-shading/wikipe-tan.svg) is shared under the same license. MiniPaint Lab cropped the image and added the hair palette and clipped highlight.
-## SVGs de Dragon Ball fornecidos para a prévia local
+## SVGs de Dragon Ball fornecidos via Figma
 
-`Kid Goku.svg` e `Goku SVG.svg` foram vetorizados no Figma pelo responsável pelo MiniPaint Lab e fornecidos ao projeto. Goku é um personagem de Dragon Ball. O crédito desta seção refere-se à autoria dos vetores.
+`Kid Goku.svg` e `Goku SVG.svg` foram vetorizados no Figma pelo responsável pelo Pincel Guia e exportados para o projeto. Goku é um personagem de Dragon Ball. O crédito desta seção refere-se à autoria dos vetores.
