@@ -1,9 +1,127 @@
-import {useState} from 'react';
-import {useCatalog} from '../../infrastructure/use-catalog';
-import {correctMix} from '../../domain/color/correct';
-export function Corrector(){
- const [current,setCurrent]=useState('#b83232'),[target,setTarget]=useState('#d46b26'),[drops,setDrops]=useState('5'),[brand,setBrand]=useState('');
- const {paints,status,brands}=useCatalog();
- const [results,setResults]=useState<ReturnType<typeof correctMix>|null>(null);
- return <section className="panel"><div className="ingredient-fields"><label>Cor atual<input type="color" value={current} onChange={e=>{setCurrent(e.target.value);setResults(null)}}/></label><label>Cor desejada<input type="color" value={target} onChange={e=>{setTarget(e.target.value);setResults(null)}}/></label><label>Gotas de tinta existentes<input type="number" min="1" max="10000" value={drops} onChange={e=>{setDrops(e.target.value);setResults(null)}}/></label><label>Fabricante<select value={brand} onChange={e=>{setBrand(e.target.value);setResults(null)}}><option value="">Todas as marcas</option>{brands.map(b=><option key={b}>{b}</option>)}</select></label></div><button disabled={!paints.length||!Number.isSafeInteger(Number(drops))||Number(drops)<1||Number(drops)>10000} onClick={()=>setResults(correctMix(current,target,Number(drops),paints.filter(p=>!brand||p.brand===brand)))}>Calcular correção</button>{status&&<p role="status">{status}</p>}{results?.map((r,i)=><p key={i}><span style={{display:'inline-block',width:24,height:24,background:r.hex,verticalAlign:'middle'}}/> +{r.added} gotas · {r.paint.brand} {r.paint.name} {r.paint.code} · {r.hex}</p>)}{results?.length===0&&<p>Nenhuma melhora encontrada na busca limitada.</p>}<small>Estimativa a partir da cor atual, sem conhecer os pigmentos originais. Teste uma pequena amostra antes de corrigir o lote.</small></section>
+import { useState } from 'react';
+import { ArrowRight, Pipette } from 'lucide-react';
+import { useCatalog } from '../../infrastructure/use-catalog';
+import { correctMix } from '../../domain/color/correct';
+import { ColorField } from '../../ui/color-field';
+
+export function Corrector() {
+  const [current, setCurrent] = useState('#b83232');
+  const [target, setTarget] = useState('#d46b26');
+  const [drops, setDrops] = useState('5');
+  const [brand, setBrand] = useState('');
+  const { paints, status, brands, retry } = useCatalog();
+  const [results, setResults] = useState<ReturnType<typeof correctMix> | null>(
+    null,
+  );
+  const amount = Number(drops);
+  const validAmount =
+    Number.isInteger(amount) && amount >= 1 && amount <= 10000;
+
+  return (
+    <>
+      <section className="tool-surface color-correction">
+        <div className="color-pair">
+          <ColorField
+            label="Cor atual"
+            hex={current}
+            onChange={(hex) => {
+              setCurrent(hex);
+              setResults(null);
+            }}
+          />
+          <ArrowRight size={24} aria-hidden="true" />
+          <ColorField
+            label="Cor desejada"
+            hex={target}
+            onChange={(hex) => {
+              setTarget(hex);
+              setResults(null);
+            }}
+          />
+        </div>
+        <div className="tool-settings">
+          <label>
+            Gotas de tinta existentes
+            <input
+              type="number"
+              min="1"
+              max="10000"
+              value={drops}
+              onChange={(event) => {
+                setDrops(event.target.value);
+                setResults(null);
+              }}
+            />
+          </label>
+          <button
+            className="tool-primary"
+            disabled={!paints.length || !validAmount}
+            onClick={() => {
+              setResults(
+                correctMix(
+                  current,
+                  target,
+                  amount,
+                  paints.filter((paint) => !brand || paint.brand === brand),
+                ),
+              );
+            }}
+          >
+            <Pipette size={18} aria-hidden="true" /> Calcular correção
+          </button>
+          {status && <p role="status">{status}</p>}
+          {retry && (
+            <button className="tool-secondary" type="button" onClick={retry}>
+              Tentar novamente
+            </button>
+          )}
+          <details className="studio-disclosure">
+            <summary>Filtrar por fabricante</summary>
+            <label>
+              Fabricante
+              <select
+                value={brand}
+                onChange={(event) => {
+                  setBrand(event.target.value);
+                  setResults(null);
+                }}
+              >
+                <option value="">Todas as marcas</option>
+                {brands.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+          </details>
+        </div>
+      </section>
+      {results && (
+        <section className="tool-results">
+          <h2>Ajustes sugeridos</h2>
+          {results.length === 0 && (
+            <p role="status">Nenhuma melhora encontrada na busca limitada.</p>
+          )}
+          <ul className="swatch-grid">
+            {results.map(({ hex, added, paint }, index) => (
+              <li key={index} className="swatch-action">
+                <span
+                  className="swatch-block"
+                  style={{ background: hex }}
+                  aria-hidden="true"
+                />
+                <strong>+{added} gotas</strong>
+                <small>
+                  {paint.brand} {paint.name} {paint.code} · {hex}
+                </small>
+              </li>
+            ))}
+          </ul>
+          <p className="muted">
+            Estimativa pela cor atual. Teste em uma amostra antes de corrigir o
+            lote.
+          </p>
+        </section>
+      )}
+    </>
+  );
 }

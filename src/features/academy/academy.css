@@ -1,1 +1,99 @@
-.academy-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:12px}.academy-layout iframe{width:100%;aspect-ratio:16/9;border:0}.academy-layout details{margin:12px 0}.academy-layout summary{cursor:pointer;font-weight:600}.academy-layout section:last-child button{width:100%;text-align:left}.academy-layout button[aria-current=step]{outline:1px solid currentColor}@media(max-width:800px){.academy-layout{grid-template-columns:1fr}}
+.academy-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(200px, 1fr);
+  align-items: start;
+  gap: clamp(16px, 4vw, 40px);
+}
+.academy-course {
+  font-size: 0.875rem;
+}
+.academy-lesson {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+.academy-lesson h2 {
+  font-size: clamp(1.35rem, 2.6vw, 2.125rem);
+}
+.academy-lesson p {
+  max-width: 65ch;
+  margin: 0;
+}
+.academy-lesson iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 0;
+}
+.academy-palette {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+.academy-exercise {
+  display: flex;
+  width: 100%;
+  align-items: start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-control);
+  background: var(--selection);
+}
+.academy-exercise svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.academy-exercise h3 {
+  font-weight: 700;
+}
+.academy-lesson details {
+  width: 100%;
+}
+.academy-lesson details ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+.academy-playlist progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--accent);
+  appearance: none;
+  overflow: hidden;
+  border: 0;
+  border-radius: 99px;
+  background: var(--selection);
+}
+.academy-playlist progress::-webkit-progress-bar {
+  background: var(--selection);
+}
+.academy-playlist progress::-webkit-progress-value {
+  background: var(--accent);
+}
+.academy-playlist progress::-moz-progress-bar {
+  background: var(--accent);
+}
+.academy-playlist p {
+  font-size: 0.875rem;
+}
+.academy-playlist button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  width: 100%;
+  min-height: 44px;
+}
+.academy-playlist button[aria-current='step'] {
+  background: var(--selection);
+  border-color: transparent;
+}
+@media (max-width: 870px) {
+  .academy-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.academy-start h2 {
+  margin-bottom: 8px;
+}
+.academy-start .tool-modes {
+  padding-bottom: 0;
+}

@@ -1,7 +1,7 @@
-# MiniPaint Lab
+# Pincel Guia
 Ateliê digital gratuito e aberto para aprender pintura de miniaturas, com foco inicial em anime e cel shading. Projeto independente, sem vínculo oficial com DragonFruit.
 
-Estado: Sprint 00 — documentação inicial; aplicação ainda não implementada.
+O laboratório de cores está implementado. A seção Dicas de pintura reúne o conteúdo inicial de pintura de miniaturas.
 
 - [Arquitetura](ARCHITECTURE.md)
 - [Design](DESIGN.md)

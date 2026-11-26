@@ -1,10 +1,282 @@
-import {useState} from 'react';
-import {isSavedRecipe,mergeRecipeBackup,type SavedRecipe} from '../../domain/color/saved-recipe';
-import {readRecipes,writeRecipes} from '../../infrastructure/recipe-store';
-export function RecipeLibrary({onLoad}:{onLoad:(r:SavedRecipe)=>void}){
- const [saved,setSaved]=useState<SavedRecipe[]>(()=>{try{return readRecipes()}catch{return []}});
- const [storageError]=useState(()=>{try{readRecipes();return false}catch{return true}});
- const [compare,setCompare]=useState<string[]>([]),[notice,setNotice]=useState('');
- function persist(next:SavedRecipe[]){try{if(storageError)throw new Error();writeRecipes(next);setSaved(next);setNotice('Receitas atualizadas.')}catch{setNotice('Não foi possível gravar no navegador.')}}
- return <section className="panel"><h2>Receitas salvas ({saved.length})</h2>{!saved.length&&!storageError&&<p>Nenhuma receita salva.</p>}<button disabled={!saved.length} onClick={()=>{const url=URL.createObjectURL(new Blob([JSON.stringify({version:1,recipes:saved},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='minipaint-receitas.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}}>Exportar backup</button><label>Importar backup (adiciona receitas)<input type="file" accept=".json,application/json" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>2000000)throw new Error();const data=JSON.parse(await f.text());if(data.version!==1||!Array.isArray(data.recipes)||!data.recipes.every(isSavedRecipe))throw new Error();persist(mergeRecipeBackup(readRecipes(),data.recipes,()=>crypto.randomUUID()))}catch{setNotice('Backup inválido ou indisponível.')}finally{e.target.value=''}}}/></label>{saved.map(r=><div key={r.id} className="quantity"><span style={{width:24,height:24,background:r.hex}}/><span>{r.name} · {r.hex}</span><button onClick={()=>{onLoad(r)}}>Abrir</button><label><input type="checkbox" checked={compare.includes(r.id)} onChange={e=>setCompare(old=>e.target.checked?[...old.slice(-1),r.id]:old.filter(id=>id!==r.id))}/> Comparar</label><button onClick={()=>{if(window.confirm('Excluir esta receita?')){persist(saved.filter(x=>x.id!==r.id));setCompare(old=>old.filter(id=>id!==r.id))}}}>Excluir</button></div>)}{compare.length>0&&<div className="recipe-layout">{saved.filter(r=>compare.includes(r.id)).map(r=><section key={r.id}><div style={{background:r.hex,height:48}}/><strong>{r.name}</strong>{r.paints.map((p,i)=><p key={i}>{p.drops} gotas · {p.brand} {p.name}</p>)}<p>Diluente: {r.thinner} gotas</p></section>)}</div>}{storageError&&<p role="alert">Receitas locais indisponíveis.</p>}<p role="status">{notice}</p><small>Receitas armazenadas neste navegador.</small></section>
+import { primers } from '../../domain/color/primer';
+import { ConfirmDialog } from '../../ui/studio-dialog';
+import { useStudioNotice } from '../../ui/studio-notice';
+import { StudioHeading } from '../../ui/studio-heading';
+import { paintBrandLabel } from '../../domain/color/saved-recipe';
+import { useEffect, useState } from 'react';
+import { Archive, ArrowUpRight, Plus, Trash2 } from 'lucide-react';
+import {
+  isSavedRecipe,
+  mergeRecipeBackup,
+  type SavedRecipe,
+} from '../../domain/color/saved-recipe';
+import {
+  readRecipes,
+  recipeStorageKey,
+  updateRecipes,
+} from '../../infrastructure/recipe-store';
+
+function exportBackup(recipes: SavedRecipe[]) {
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify({ version: 1, recipes }, null, 2)], {
+      type: 'application/json',
+    }),
+  );
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'minipaint-receitas.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const applicationLabels = {
+  color: 'Só mistura',
+  brush: 'Pincel',
+  airbrush: 'Aerógrafo',
+};
+const diluentLabels = {
+  water: 'Água',
+  medium: 'Médium',
+  'airbrush-thinner': 'Diluente de aerógrafo',
+};
+
+function RecipeApplication({ recipe }: { recipe: SavedRecipe }) {
+  const { preparation, thinner, primer } = recipe;
+  const application = [
+    preparation && applicationLabels[preparation.application],
+    preparation?.diluent && diluentLabels[preparation.diluent],
+    thinner > 0 &&
+      thinner +
+        (thinner === 1 ? ' gota' : ' gotas') +
+        (preparation?.diluent ? '' : ' de diluente'),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  const primerName = primers.find((item) => item.hex === primer?.hex)?.name;
+  return (
+    <div className="recipe-application">
+      {application && <small>{application}</small>}
+      {primer && (
+        <small>
+          Primer {primerName?.toLowerCase()} · {primer.layers}{' '}
+          {primer.layers === 1 ? 'camada' : 'camadas'} ·{' '}
+          {primer.tested ? 'Teste registrado' : 'Simulação'}
+        </small>
+      )}
+    </div>
+  );
+}
+
+export function RecipeLibrary({
+  onLoad,
+  onMix,
+}: {
+  onLoad: (recipe: SavedRecipe) => void;
+  onMix: () => void;
+}) {
+  const [initial] = useState(() => {
+    try {
+      return { recipes: readRecipes(), storageError: false };
+    } catch {
+      return { recipes: [], storageError: true };
+    }
+  });
+  const [saved, setSaved] = useState(initial.recipes);
+  const [storageError, setStorageError] = useState(initial.storageError);
+  const [compare, setCompare] = useState<string[]>([]);
+  const notify = useStudioNotice();
+  const [pendingDelete, setPendingDelete] = useState<SavedRecipe>();
+
+  useEffect(() => {
+    function sync(event: StorageEvent) {
+      if (
+        event.storageArea !== localStorage ||
+        (event.key !== recipeStorageKey && event.key !== null)
+      )
+        return;
+      try {
+        const latest = readRecipes();
+        setSaved(latest);
+        setStorageError(false);
+        setCompare((ids) =>
+          ids.filter((id) => latest.some((recipe) => recipe.id === id)),
+        );
+      } catch {
+        setStorageError(true);
+        notify('Não foi possível atualizar as receitas locais.', true);
+      }
+    }
+
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, [notify]);
+
+  async function persist(update: (current: SavedRecipe[]) => SavedRecipe[]) {
+    try {
+      const next = await updateRecipes(update);
+      setSaved(next);
+      setStorageError(false);
+      setCompare((ids) =>
+        ids.filter((id) => next.some((recipe) => recipe.id === id)),
+      );
+      notify('Receitas atualizadas.');
+    } catch {
+      notify('Não foi possível gravar no navegador.', true);
+    }
+  }
+
+  async function importBackup(file: File) {
+    try {
+      if (file.size > 2000000) throw new Error();
+      const data = JSON.parse(await file.text());
+      if (
+        data.version !== 1 ||
+        !Array.isArray(data.recipes) ||
+        !data.recipes.every(isSavedRecipe)
+      )
+        throw new Error();
+      await persist((current) =>
+        mergeRecipeBackup(current, data.recipes, () => crypto.randomUUID()),
+      );
+    } catch {
+      notify('Backup inválido ou indisponível.', true);
+    }
+  }
+
+  return (
+    <div className="tool-page">
+      <StudioHeading
+        title="Meu ateliê"
+        description="Reabra e compare as misturas que você salvou."
+      >
+        {saved.length > 0 && (
+          <button className="tool-primary" onClick={onMix}>
+            <Plus size={18} aria-hidden="true" /> Misturar tintas
+          </button>
+        )}
+      </StudioHeading>
+      {!saved.length && !storageError && (
+        <section className="tool-surface atelier-empty">
+          <h2>Nenhuma receita salva.</h2>
+          <button className="tool-primary" onClick={onMix}>
+            <Plus size={18} aria-hidden="true" /> Misturar tintas
+          </button>
+        </section>
+      )}
+      {storageError && <p role="alert">Receitas locais indisponíveis.</p>}
+      {!!saved.length && (
+        <ul className="swatch-grid saved-swatches" aria-label="Receitas salvas">
+          {saved.map((recipe) => (
+            <li key={recipe.id}>
+              <button className="swatch-action" onClick={() => onLoad(recipe)}>
+                <span
+                  className="swatch-block"
+                  style={{ background: recipe.hex }}
+                  aria-hidden="true"
+                />
+                <strong>
+                  {recipe.name} · <span>{recipe.hex}</span>
+                </strong>
+                <RecipeApplication recipe={recipe} />
+                <span className="swatch-link">
+                  Abrir <ArrowUpRight size={16} aria-hidden="true" />
+                </span>
+              </button>
+              <div className="saved-actions">
+                <label className="inline-check">
+                  <input
+                    type="checkbox"
+                    checked={compare.includes(recipe.id)}
+                    onChange={(event) =>
+                      setCompare((old) =>
+                        event.target.checked
+                          ? [...old.slice(-1), recipe.id]
+                          : old.filter((id) => id !== recipe.id),
+                      )
+                    }
+                  />{' '}
+                  Comparar
+                </label>
+                <button
+                  aria-label="Excluir"
+                  title={`Excluir ${recipe.name}`}
+                  onClick={() => setPendingDelete(recipe)}
+                >
+                  <Trash2 size={17} aria-hidden="true" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {!!compare.length && (
+        <section className="tool-results">
+          <h2>Comparação de receitas</h2>
+          <div className="comparison-swatches">
+            {saved
+              .filter((recipe) => compare.includes(recipe.id))
+              .map((recipe) => (
+                <section key={recipe.id}>
+                  <div
+                    className="swatch-block"
+                    style={{ background: recipe.hex }}
+                    aria-hidden="true"
+                  />
+                  <h3>{recipe.name}</h3>
+                  <ul>
+                    {recipe.paints.map((paint, index) => (
+                      <li key={index}>
+                        {paint.drops} gotas ·{' '}
+                        {[paintBrandLabel(paint.brand), paint.name]
+                          .filter(Boolean)
+                          .join(' ')}
+                      </li>
+                    ))}
+                  </ul>
+                  <RecipeApplication recipe={recipe} />
+                </section>
+              ))}
+          </div>
+        </section>
+      )}
+      <details className="studio-disclosure atelier-backup">
+        <summary>
+          <Archive size={18} aria-hidden="true" /> Backup de receitas
+        </summary>
+        <p>As receitas ficam neste navegador.</p>
+        <button
+          className="tool-secondary"
+          disabled={!saved.length}
+          onClick={() => exportBackup(saved)}
+        >
+          Exportar backup
+        </button>
+        <label>
+          Importar backup (adiciona receitas)
+          <input
+            type="file"
+            accept=".json,application/json"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void importBackup(file);
+              event.target.value = '';
+            }}
+          />
+        </label>
+      </details>
+      <ConfirmDialog
+        open={!!pendingDelete}
+        title="Excluir receita?"
+        description={pendingDelete?.name ?? ''}
+        confirmLabel="Excluir receita"
+        onCancel={() => setPendingDelete(undefined)}
+        onConfirm={() => {
+          const id = pendingDelete?.id;
+          setPendingDelete(undefined);
+          if (id)
+            void persist((current) => current.filter((item) => item.id !== id));
+        }}
+      />
+    </div>
+  );
 }

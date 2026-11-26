@@ -1,1 +1,343 @@
-.workspace aside{position:sticky;top:0;height:100vh;padding:20px 14px;align-self:start}.workspace-brand{display:flex;align-items:center;justify-content:space-between}.workspace .brand{font-size:20px;letter-spacing:-.04em}.workspace .brand svg{color:var(--accent)}.workspace nav button{width:100%;min-height:44px}.workspace nav button[aria-current]{background:#5135a8;color:white;border-color:#7959d9}.nav-group svg:last-child{margin-left:auto}.nav-children{border-left:1px solid var(--line);margin-left:12px;padding-left:8px;display:grid;gap:3px}.nav-children button{font-size:14px}.dashboard{max-width:1100px}.dashboard h1{font-size:clamp(25px,3vw,38px)}.quick-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}.quick-tool{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:174px;padding:20px;border-radius:14px;color:#fff;border:1px solid #ffffff33;background:#5135a8}.quick-tool:hover{filter:brightness(1.12);background:var(--card-color)}.quick-lab{--card-color:#5135a8;background:linear-gradient(135deg,#6940bd,#412580)}.quick-colors{--card-color:#24509a;background:linear-gradient(135deg,#2459a8,#19396e)}.quick-cel{--card-color:#176a53;background:linear-gradient(135deg,#16765d,#104b40)}.quick-tool strong{font-size:20px}.quick-tool span{font-size:14px;line-height:1.45}.quick-arrow{align-self:flex-end;margin-top:auto}.atelier-banner,.atelier-recipe{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.atelier-banner>div,.atelier-recipe>div{flex:1;min-width:140px}.atelier-recipe{padding:12px 0;border-bottom:1px solid var(--line)}.start-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0;list-style:none;margin:16px 0 0}.start-steps li{display:flex;gap:10px}.start-steps li>span{flex:none;background:#5135a8;color:white;border-radius:50%;width:28px;height:28px;display:grid;place-items:center}.start-steps p{font-size:14px}.mobile-menu{display:none}@media(max-width:1000px){.quick-tools{grid-template-columns:1fr}.quick-tool{min-height:0;display:grid;grid-template-columns:32px 1fr 22px;align-items:center;gap:6px 12px;padding:16px}.quick-tool strong{grid-column:2}.quick-tool span{grid-column:2}.quick-arrow{grid-column:3;grid-row:1/3}.start-steps{grid-template-columns:1fr}}@media(max-width:650px){.workspace aside{position:static;height:auto;gap:8px;padding:12px}.mobile-menu{display:flex}.workspace nav{display:none}.workspace nav.nav-open{display:grid}.theme-toggle{position:absolute;right:62px;top:12px}.theme-toggle span{display:none}.workspace .brand{font-size:18px}.quick-tools{margin:16px 0}.atelier-banner{gap:10px}}
+.workspace aside {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100dvh;
+  overflow-y: auto;
+  background: var(--surface);
+  padding: 24px 14px;
+}
+.workspace-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.workspace .brand {
+  min-height: 44px;
+  font: 700 20px/1 var(--font-brand);
+  letter-spacing: -0.035em;
+}
+.workspace .brand img {
+  flex: none;
+}
+.workspace nav button {
+  width: 100%;
+  min-height: 44px;
+}
+.workspace nav svg {
+  flex-shrink: 0;
+}
+.workspace nav button[aria-current] {
+  background: var(--selection);
+  color: var(--text);
+  border-color: transparent;
+  font-weight: 700;
+}
+.theme-toggle {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.studio-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  padding: clamp(1.25rem, 5vw, 4rem);
+  border-radius: var(--radius-studio);
+  background: var(--paper);
+  color: var(--ink);
+}
+.studio-intro h1 {
+  font: 700 clamp(2.5rem, 5vw, 4.75rem)/0.98 var(--font-brand);
+  letter-spacing: -0.055em;
+  max-width: 13ch;
+  text-wrap: balance;
+}
+.studio-intro p {
+  max-width: 30ch;
+  color: var(--ink-muted);
+  margin-block: 1rem 1.5rem;
+}
+.studio-cta,
+.studio-cta:hover {
+  background: var(--paper-action);
+  color: var(--paper);
+  border-radius: 999px;
+  min-height: 48px;
+  padding-inline: 1rem;
+  font-weight: 700;
+}
+.studio-cta:hover {
+  background: color-mix(in srgb, var(--paper-action) 85%, var(--ink));
+}
+.studio-intro :focus-visible {
+  outline-color: var(--ink);
+}
+.paint-samples {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: min(100%, 35rem);
+  justify-self: end;
+}
+.paint-samples li:nth-child(even) {
+  margin-top: clamp(1.25rem, 6vw, 4.5rem);
+}
+.paint-samples button {
+  display: grid;
+  width: 100%;
+  min-height: 44px;
+  padding: 2px;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.paint-samples button:hover {
+  background: color-mix(in srgb, var(--paper) 88%, var(--ink));
+}
+.paint-mark {
+  display: block;
+  width: 100%;
+  height: clamp(5rem, 12vw, 10rem);
+  background: var(--sample-color);
+  border-radius: 52% 43% 48% 41% / 16% 20% 11% 18%;
+  transform: rotate(-7deg);
+  transition: transform 180ms ease-out;
+}
+.paint-samples button:is(:hover, :focus-visible) .paint-mark {
+  transform: rotate(2deg) translateY(-4px);
+}
+.studio-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 1.8vw, 18px);
+}
+.shortcut-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  align-items: end;
+  gap: 12px;
+  min-height: clamp(145px, 16vw, 200px);
+  padding: clamp(14px, 2.4vw, 24px);
+  border-radius: var(--radius-studio);
+  background: var(--shortcut-surface);
+  color: var(--shortcut-ink);
+}
+.shortcut-block:hover {
+  background: color-mix(
+    in srgb,
+    var(--shortcut-surface) 88%,
+    var(--shortcut-ink)
+  );
+}
+.shortcut-copy strong {
+  display: block;
+  font: 700 clamp(1.1rem, 2vw, 1.55rem)/1.15 var(--font-brand);
+}
+.shortcut-copy small {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.83rem;
+  line-height: 1.35;
+}
+.shortcut-art {
+  display: grid;
+  place-items: center;
+  justify-self: start;
+  grid-column: 1/-1;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-control);
+  background: color-mix(
+    in srgb,
+    var(--shortcut-surface) 85%,
+    var(--shortcut-ink)
+  );
+}
+.shortcut-arrow {
+  align-self: end;
+}
+.shortcut-mix {
+  --shortcut-surface: var(--tone-mix);
+  --shortcut-ink: var(--ink-mix);
+}
+.shortcut-colors {
+  --shortcut-surface: var(--tone-search);
+  --shortcut-ink: var(--ink-search);
+}
+.shortcut-shading {
+  --shortcut-surface: var(--tone-shading);
+  --shortcut-ink: var(--ink-shading);
+}
+.shortcut-atelier {
+  --shortcut-surface: var(--tone-atelier);
+  --shortcut-ink: var(--ink-atelier);
+}
+.home-tools,
+.home-academy {
+  margin-top: clamp(24px, 4vw, 40px);
+}
+.home-tools > h2,
+.home-academy h2 {
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.15;
+}
+.home-tools > h2 {
+  margin-bottom: 14px;
+}
+.home-academy {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(1rem, 3vw, 2rem);
+  border-radius: var(--radius-studio);
+  background: var(--tone-academy);
+  color: var(--ink-academy);
+}
+.home-academy p {
+  color: inherit;
+  margin-bottom: 0;
+}
+@media (max-width: 550px) {
+  .shortcut-block {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shortcut-arrow {
+    display: none;
+  }
+  .home-academy {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+}
+@media (max-width: 880px) {
+  .studio-intro {
+    grid-template-columns: 1fr;
+  }
+  .paint-samples {
+    width: min(100%, 24rem);
+    justify-self: start;
+  }
+}
+@media (max-width: 800px) {
+  .workspace aside {
+    position: relative;
+    height: auto;
+    overflow: visible;
+    gap: 8px;
+    padding: 12px;
+  }
+  .workspace nav {
+    position: fixed;
+    z-index: 5;
+    inset: auto 0 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    padding: 6px max(8px, env(safe-area-inset-right))
+      calc(6px + env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+    background: var(--surface);
+    box-shadow: 0 -4px 18px rgb(0 0 0 / 10%);
+  }
+  .workspace nav button {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    min-height: 54px;
+    padding: 6px 2px;
+    gap: 3px;
+    line-height: 1.15;
+    font-size: 0.75rem;
+  }
+  .nav-label-extended {
+    display: none;
+  }
+  .workspace main {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+  .workspace main :focus-visible {
+    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+  .theme-toggle {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    justify-content: center;
+  }
+  .theme-toggle span {
+    display: none;
+  }
+  .workspace .brand {
+    font-size: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paint-mark {
+    transition: none;
+  }
+}
+
+.lab-return {
+  min-height: 44px;
+  margin: -8px 0 12px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .workspace main > .tool-page,
+  .workspace .page-panel:not([hidden]),
+  .workspace main > .studio-home {
+    animation: page-enter 220ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+  }
+  .workspace button:active:not(:disabled),
+  .workspace summary:active {
+    scale: 0.98;
+  }
+  .workspace button {
+    transition:
+      background-color var(--motion-ui),
+      scale var(--motion-ui);
+  }
+}
+@keyframes page-enter {
+  from {
+    translate: 0 6px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+.skip-to-content {
+  position: fixed;
+  z-index: 10;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 12px;
+  border-radius: var(--radius-control);
+  background: var(--accent);
+  color: var(--on-accent);
+  transform: translateY(calc(-100% - 16px));
+}
+.skip-to-content:focus-visible {
+  transform: translateY(0);
+  background: var(--accent);
+}
+.workspace[data-theme-switch] {
+  --motion-ui: 0ms;
+}
