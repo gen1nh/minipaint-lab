@@ -1,0 +1,2 @@
+# Color Lab — recipe foundation
+Custom paint names, manufacturers, digital swatches, integer drop quantities, dilution, recipe scaling and text export. RGB preview is explicitly provisional; equal drop volume assumed. No official catalog data imported. Next: verify Spectral.js API/license and integrate through a domain adapter, then add licensed catalog and calibration. References: https://github.com/rvanwijnen/spectral.js and https://github.com/iffprove/airbrush-color-mixer (no code copied).
