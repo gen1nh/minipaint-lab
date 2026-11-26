@@ -3,3 +3,6 @@ A calm, practical workspace for painters. Navigation: Atelier, Academy, Color La
 
 ## Product scope update
 Free public access without accounts or inventory. Select commercial paints directly from the universal catalog; custom paint is an exception inside the mixer. Courses are original curated learning paths with authorized embedded videos, creator attribution, source links, original exercises and optional browser-local progress. No video rehosting, mandatory registration or paywall. This supersedes earlier inventory plans.
+
+## Compact-first UX (required)
+Prioritize useful screen density, clear hierarchy and immediate task completion. Avoid oversized heroes, redundant cards, excessive whitespace, decorative badges, repeated headings and long default pages. Desktop lessons: video and compact playlist side by side; materials, colors, exercises and credits in concise tabs or expandable sections. Mobile: responsive single column, compact lesson selector and progressive disclosure. Mixer: compact ingredient rows, searchable catalog picker, visible result and quantities; advanced controls collapsed by default. Prefer lists and tables over card grids for dense data. Preserve readable typography, keyboard access, visible focus, contrast and adequate touch targets. Never sacrifice accessibility for density. Validate desktop and mobile layouts before release.
