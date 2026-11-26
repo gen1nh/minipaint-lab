@@ -1,7 +1,7 @@
 import {useState,useEffect} from 'react';
 import {parseCatalog,searchCatalog,type CatalogPaint} from '../../domain/color/catalog';
 let pending:Promise<CatalogPaint[]>|undefined;
-function loadCatalog(){
+export function loadCatalog(){
  if(!pending)pending=(async()=>{
   const read=async(path:string):Promise<unknown>=>{const r=await fetch(import.meta.env.BASE_URL+'catalog/'+path);if(!r.ok)throw new Error('Catalog unavailable');return r.json()};
   const index=await read('index.json');
