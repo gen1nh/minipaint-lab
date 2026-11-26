@@ -1,11 +1,7 @@
-# Color Lab — recipe foundation
-Custom paint names, manufacturers, digital swatches, integer drop quantities, dilution, recipe scaling and text export. RGB preview is explicitly provisional; equal drop volume assumed. No official catalog data imported. Next: verify Spectral.js API/license and integrate through a domain adapter, then add licensed catalog and calibration. References: https://github.com/rvanwijnen/spectral.js and https://github.com/iffprove/airbrush-color-mixer (no code copied).
-
-## Spectral preview
-The UI now uses a Spectral.js 3.0.0 adapter. RGB remains in the quantity module as a legacy preview for comparison. The library reconstructs reflectance from RGB, not measured paint spectra; drop factors are not physical concentration measurements. Tinting strength defaults to 1; calibration and official catalog remain pending. Upstream example regression tests added. Installation/build not yet verified.
-
-## Appearance and experimental calibration
-Cel shading supports an artistic warm/cool bias, not a measured illuminant. Primer preview composites in linear sRGB with user-defined coverage and repeated layers; it is not a physical coating model. Pigment strength is adjustable per ingredient (0.1–5, default 1) and retained in local recipes. This is manual tuning, not manufacturer-specific calibration. Compare dried swatches under consistent light, primer, layer count and dilution; do not claim verified pigment strength without measurements.
-
-## Release checklist
-Suggested recipes open directly in the mixer. Local recipes support comparison and versioned JSON backup. Image extraction includes approximate dominant colors using quantized RGB bins. Physical pigment measurements, catalog completeness, browser accessibility, responsive visual review and end-to-end CI remain acceptance checks; deployment success alone does not establish them.
+# Color Lab
+The laboratory uses Spectral.js 3.0.0 for approximate digital paint mixing and OKLab for nearest swatch ranking. Recipes use integer drops, dilution, scaling, optional volume and average cost estimates. Commercial catalog: 4743 entries from ten brands; see color-audit.md for structural findings and provenance limitations.
+Suggested recipes and individual matches open in the mixer. Drafts survive navigation within the session. Saved recipes persist locally, support comparison and versioned JSON backup with duplicate-content filtering. Image extraction stays in the browser. Cel shading and primer preview are artistic approximations.
+## Scope and release
+No physical accuracy claims, measured pigment calibration, or exhaustive catalog coverage required. Manual pigment strength remains optional and experimental. No new algorithm or dependency without practical evidence of benefit.
+CI passed at 9dc4d0ef9d609d230326175c3fbf5851aec1bd43, including npm ci, lint, typecheck, unit tests, build and Chromium integration tests for recipe scaling, catalog selection, navigation persistence, mobile width and saved recipe deletion protection.
+Remaining: validate the final candidate, inspect desktop/mobile appearance and keyboard accessibility, then release through a protected main PR and verify Vercel. Academy remains unchanged.
