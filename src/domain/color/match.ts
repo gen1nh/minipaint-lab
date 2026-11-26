@@ -8,13 +8,20 @@ function lab(hex:string){
 }
 export function colorDistance(a:string,b:string){const x=lab(a),y=lab(b);return Math.hypot(...x.map((v,i)=>v-y[i]!))*100}
 export function matchPaints(target:string,paints:readonly CatalogPaint[],limit=12){return paints.map(p=>({paint:p,distance:colorDistance(target,p.hex)})).sort((a,b)=>a.distance-b.distance).slice(0,limit)}
-export function reverseMix(target:string,paints:readonly CatalogPaint[]){
+export function reverseMix(target:string,paints:readonly CatalogPaint[],advanced=false){
  const candidates=matchPaints(target,paints,12).map(x=>x.paint);
  const results:{ingredients:{paint:CatalogPaint;drops:number}[];hex:string;distance:number}[]=[];
  for(let i=0;i<candidates.length;i++)for(let j=i+1;j<candidates.length;j++)for(const [a,b] of [[1,1],[1,2],[2,1],[1,3],[3,1]] as const){
  const ingredients=[{paint:candidates[i]!,drops:a},{paint:candidates[j]!,drops:b}];
  const hex=mixPigments(ingredients.map(x=>({hex:x.paint.hex,drops:x.drops})));
  results.push({ingredients,hex,distance:colorDistance(target,hex)});
+ }
+ if(advanced){
+ const seeds=[...results].sort((a,b)=>a.distance-b.distance).slice(0,12);
+ const anchors=['#ffffff','#000000','#ff0000','#ffff00','#0000ff','#00ff00','#ff00ff','#00ffff'];
+ const extras=[...new Set([...candidates,...anchors.flatMap(h=>matchPaints(h,paints,1).map(x=>x.paint))])];
+ for(const seed of seeds)for(const paint of extras){if(seed.ingredients.some(x=>x.paint===paint))continue;
+ for(const drops of [1,2,3]){const ingredients=[...seed.ingredients,{paint,drops}];const hex=mixPigments(ingredients.map(x=>({hex:x.paint.hex,drops:x.drops})));results.push({ingredients,hex,distance:colorDistance(target,hex)})}}
  }
  return results.sort((a,b)=>a.distance-b.distance).slice(0,5);
 }
