@@ -2,9 +2,9 @@ import {useState,useEffect} from 'react';
 import {loadCatalog} from '../paint-mixer/catalog-picker';
 import {matchPaints,reverseMix} from '../../domain/color/match';
 import type {CatalogPaint} from '../../domain/color/catalog';
-export function ColorTools(){
+export function ColorTools({initialTarget='#d46b26'}:{initialTarget?:string}){
  const [paints,setPaints]=useState<CatalogPaint[]>([]);
- const [target,setTarget]=useState('#d46b26');
+ const [target,setTarget]=useState(initialTarget);
  const [brand,setBrand]=useState('');
  const [status,setStatus]=useState('Carregando catálogo…');
  const [result,setResult]=useState<{target:string;matches:ReturnType<typeof matchPaints>;recipes:ReturnType<typeof reverseMix>}|null>(null);
