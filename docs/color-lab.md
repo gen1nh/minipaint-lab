@@ -6,3 +6,6 @@ The UI now uses a Spectral.js 3.0.0 adapter. RGB remains in the quantity module 
 
 ## Appearance and experimental calibration
 Cel shading supports an artistic warm/cool bias, not a measured illuminant. Primer preview composites in linear sRGB with user-defined coverage and repeated layers; it is not a physical coating model. Pigment strength is adjustable per ingredient (0.1–5, default 1) and retained in local recipes. This is manual tuning, not manufacturer-specific calibration. Compare dried swatches under consistent light, primer, layer count and dilution; do not claim verified pigment strength without measurements.
+
+## Release checklist
+Suggested recipes open directly in the mixer. Local recipes support comparison and versioned JSON backup. Image extraction includes approximate dominant colors using quantized RGB bins. Physical pigment measurements, catalog completeness, browser accessibility, responsive visual review and end-to-end CI remain acceptance checks; deployment success alone does not establish them.
