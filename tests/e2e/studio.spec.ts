@@ -32,10 +32,10 @@ test('mobile mixer remains within the viewport',async({page})=>{
 test('saved recipe survives reload and deletion requires confirmation',async({page})=>{
  await page.goto('/');
  await page.getByRole('button',{name:'Abrir laboratório'}).click();
- await page.getByText('Livro de receitas (0)',{exact:true}).click();
+ await page.getByText('Salvar mistura',{exact:true}).click();
  await page.getByRole('textbox',{name:'Nome da receita'}).fill('Receita de teste');
  await page.getByRole('button',{name:'Salvar receita'}).click();
- await expect(page.getByText('Livro de receitas (1)',{exact:true})).toBeVisible();
+ await expect(page.getByText('Receitas atualizadas.',{exact:true})).toBeVisible();
  await page.reload();
  await page.getByRole('button',{name:'Abrir laboratório'}).click();
  await page.getByRole('navigation').getByRole('button',{name:'Meu ateliê'}).click();

@@ -16,3 +16,6 @@ Reviewed the dashboard, navigation, mixer, recipe extras, catalog picker, color 
 
 ## Second pass
 Recipe management moved to Atelier, with backup, comparison, opening and deletion retained. Mixer keeps saving. Removed obsolete RGB calculation from recipe quantities; spectral preview remains unchanged. Regression tests updated. CSS consolidation remains pending visual validation.
+
+## Third pass
+Consolidated global theme tokens, control styling and responsive rules; feature-specific layout stays in feature CSS. Mixer save panel no longer duplicates library count or cached recipe state. Pending CI and visual review of this candidate.
