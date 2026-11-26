@@ -1,0 +1,13 @@
+import {useState,useEffect} from 'react';
+import {loadCatalog} from '../paint-mixer/catalog-picker';
+import {matchPaints,reverseMix} from '../../domain/color/match';
+import type {CatalogPaint} from '../../domain/color/catalog';
+export function ColorTools(){
+ const [paints,setPaints]=useState<CatalogPaint[]>([]);
+ const [target,setTarget]=useState('#d46b26');
+ const [brand,setBrand]=useState('');
+ const [status,setStatus]=useState('Carregando catálogo…');
+ const [result,setResult]=useState<{target:string;matches:ReturnType<typeof matchPaints>;recipes:ReturnType<typeof reverseMix>}|null>(null);
+ useEffect(()=>{let active=true;void loadCatalog().then(p=>{if(active){setPaints(p);setStatus('')}}).catch(()=>{if(active)setStatus('Catálogo indisponível')});return()=>{active=false}},[]);
+ return <><h1>Encontrar cores</h1><section className="panel"><label>Cor desejada <input type="color" value={target} onChange={e=>{setTarget(e.target.value);setResult(null)}}/> {target}</label><label>Fabricante<select value={brand} onChange={e=>{setBrand(e.target.value);setResult(null)}}><option value="">Todas as marcas</option>{[...new Set(paints.map(p=>p.brand))].sort().map(b=><option key={b}>{b}</option>)}</select></label><button className="primary" disabled={!paints.length} onClick={()=>{const pool=paints.filter(p=>!brand||p.brand===brand);setResult({target,matches:matchPaints(target,pool,8),recipes:reverseMix(target,pool)})}}>Buscar equivalentes e misturas</button>{status&&<p role="status">{status}</p>}<p className="muted">Similaridade digital OKLab; misturas espectrais aproximadas. Não garante equivalência física ou compatibilidade de formulações.</p></section>{result&&<div className="recipe-layout"><section className="panel"><h2>Tintas próximas</h2>{result.matches.map((x,i)=><p key={i}><span className="catalog-swatch" style={{display:'inline-block',verticalAlign:'middle',background:x.paint.hex}}/> {x.paint.brand} · {x.paint.name} {x.paint.code} <small>({x.paint.range})</small></p>)}</section><section className="panel"><h2>Misturas sugeridas</h2>{result.recipes.map((r,i)=><div key={i} className="ingredient"><span className="catalog-swatch" style={{display:'inline-block',background:r.hex}}/> {r.hex}{r.ingredients.map((x,j)=><p key={j}>{x.drops} gotas · {x.paint.brand} {x.paint.name} {x.paint.code} ({x.paint.range})</p>)}</div>)}<small>Busca limitada às 12 tintas digitalmente mais próximas, com proporções de 1:1 a 3:1. Teste em uma amostra antes de pintar.</small></section></div>}</>
+}
