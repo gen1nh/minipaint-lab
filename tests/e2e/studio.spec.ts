@@ -38,10 +38,10 @@ test('saved recipe survives reload and deletion requires confirmation',async({pa
  await expect(page.getByText('Livro de receitas (1)',{exact:true})).toBeVisible();
  await page.reload();
  await page.getByRole('button',{name:'Abrir laboratório'}).click();
- await page.getByText('Livro de receitas (1)',{exact:true}).click();
+ await page.getByRole('navigation').getByRole('button',{name:'Meu ateliê'}).click();
  page.once('dialog',d=>d.dismiss());
  await page.getByRole('button',{name:'Excluir',exact:true}).click();
  await expect(page.getByText(/Receita de teste ·/)).toBeVisible();
 });
 
-test('home groups color tools and atelier lists saved recipes',async({page})=>{await page.goto('/');const nav=page.getByRole('navigation');await nav.getByRole('button',{name:'Laboratório de cores'}).click();await expect(nav.getByRole('button',{name:'Misturar tintas'})).toHaveCount(0);await nav.getByRole('button',{name:'Laboratório de cores'}).click();await expect(nav.getByRole('button',{name:'Misturar tintas'})).toBeVisible();await page.getByRole('button',{name:'Abrir ateliê'}).click();await expect(page.getByRole('heading',{name:'Meu ateliê'})).toBeVisible();await expect(page.getByRole('heading',{name:'Nenhuma receita salva'})).toBeVisible()});
+test('home groups color tools and atelier lists saved recipes',async({page})=>{await page.goto('/');const nav=page.getByRole('navigation');await nav.getByRole('button',{name:'Laboratório de cores'}).click();await expect(nav.getByRole('button',{name:'Misturar tintas'})).toHaveCount(0);await nav.getByRole('button',{name:'Laboratório de cores'}).click();await expect(nav.getByRole('button',{name:'Misturar tintas'})).toBeVisible();await page.getByRole('button',{name:'Abrir ateliê'}).click();await expect(page.getByRole('heading',{name:'Meu ateliê'})).toBeVisible();await expect(page.getByText('Nenhuma receita salva.',{exact:true})).toBeVisible()});

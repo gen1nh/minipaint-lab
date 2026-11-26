@@ -13,3 +13,6 @@ Reviewed the dashboard, navigation, mixer, recipe extras, catalog picker, color 
 - Remove unused RGB recipe preview after checking all consumers; retain distinct artistic and spectral operations. Share exact sRGB conversion where appropriate, not unlike algorithms.
 - Reconcile historical design and release notes with current behavior.
 - Validate navigation and storage behavior with regression tests. Academy content unchanged.
+
+## Second pass
+Recipe management moved to Atelier, with backup, comparison, opening and deletion retained. Mixer keeps saving. Removed obsolete RGB calculation from recipe quantities; spectral preview remains unchanged. Regression tests updated. CSS consolidation remains pending visual validation.
