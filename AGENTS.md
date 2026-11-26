@@ -6,3 +6,6 @@ Work on develop or feature branches, never commit individual changes directly to
 
 ## Practical scope
 Reuse maintained, license-compatible open-source solutions before writing new algorithms. Keep Spectral.js and the existing perceptual distance unless a tested comparison demonstrates a practical improvement. Prefer simple, reproducible recipes and clear visual comparisons; do not invent physical accuracy scores or pigment measurements. No laboratory calibration requirement. Avoid catalog expansion without verified provenance and practical value.
+
+## Redundancy prevention
+Before adding a feature, search for existing equivalents in UI, domain, storage and dependencies. Keep one owner for each user task and one source of truth for shared logic. Home shortcuts may link to existing tools, never duplicate them. Consolidate CSS rather than layering permanent overrides. Avoid unused abstractions and speculative dependencies. Remove obsolete code only after checking consumers and regression tests. Record intentional differences instead of merging distinct algorithms merely because they look similar.
