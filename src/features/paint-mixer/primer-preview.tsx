@@ -1,0 +1,6 @@
+import {useState} from 'react';
+import {blendAppearance,layerCoverage} from '../../domain/color/appearance';
+export function PrimerPreview({hex}:{hex:string}){
+ const [coverage,setCoverage]=useState(.65),[layers,setLayers]=useState(1);
+ return <details className="panel"><summary>Influência do primer</summary><label>Cobertura por camada: {Math.round(coverage*100)}%<input type="range" min="0" max="1" step=".05" value={coverage} onChange={e=>setCoverage(Number(e.target.value))}/></label><label>Camadas: {layers}<input type="range" min="1" max="10" step="1" value={layers} onChange={e=>setLayers(Number(e.target.value))}/></label><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))',gap:8}}>{[['Branco','#ffffff'],['Cinza','#808080'],['Preto','#151515'],['Marrom','#795548']].map(([name,primer])=>{const result=blendAppearance(hex,primer!,layerCoverage(coverage,layers));return <div key={name}><div style={{background:result,height:60,border:'1px solid currentColor',borderRadius:4}}/><strong>{name}</strong><p>{result}</p></div>})}</div><small>Comparação visual por composição de cor em luz linear. Cobertura é um parâmetro ilustrativo, não uma previsão de opacidade ou secagem real.</small></details>
+}
