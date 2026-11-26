@@ -3,11 +3,6 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-    inputs:
-      deploy:
-        description: Publish to GitHub Pages after validation
-        type: boolean
-        default: false
 permissions:
   contents: read
 jobs:
@@ -36,21 +31,3 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
-      - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.deploy
-        with:
-          path: dist
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.deploy
-    needs: validate
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
