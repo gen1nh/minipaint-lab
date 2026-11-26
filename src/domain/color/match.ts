@@ -1,3 +1,4 @@
+import {referenceColors} from './reference-colors';
 import type {CatalogPaint} from './catalog';
 import {mixPigments} from './spectral-mix';
 function lab(hex:string){
@@ -18,7 +19,7 @@ export function reverseMix(target:string,paints:readonly CatalogPaint[],advanced
  }
  if(advanced){
  const seeds=[...results].sort((a,b)=>a.distance-b.distance).slice(0,12);
- const anchors=['#ffffff','#000000','#ff0000','#ffff00','#0000ff','#00ff00','#ff00ff','#00ffff'];
+ const anchors=referenceColors;
  const extras=[...new Set([...candidates,...anchors.flatMap(h=>matchPaints(h,paints,1).map(x=>x.paint))])];
  for(const seed of seeds)for(const paint of extras){if(seed.ingredients.some(x=>x.paint===paint))continue;
  for(const drops of [1,2,3]){const ingredients=[...seed.ingredients,{paint,drops}];const hex=mixPigments(ingredients.map(x=>({hex:x.paint.hex,drops:x.drops})));results.push({ingredients,hex,distance:colorDistance(target,hex)})}}
