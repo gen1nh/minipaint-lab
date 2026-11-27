@@ -1,3 +1,5 @@
+import { searchText } from '../search-text';
+
 export type CatalogPaint = {
   brand: string;
   name: string;
@@ -26,15 +28,10 @@ export function parseCatalog(data: unknown): CatalogPaint[] {
   });
 }
 export function searchCatalog(paints: CatalogPaint[], query: string) {
-  const norm = (s: string) =>
-    s
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase();
-  const terms = norm(query).trim().split(/\s+/);
+  const terms = searchText(query).split(/\s+/);
   const matches: CatalogPaint[] = [];
   for (const paint of paints) {
-    const keywords = norm(
+    const keywords = searchText(
       [paint.brand, paint.name, paint.code, paint.range].join(' '),
     );
     if (!terms.every((term) => keywords.includes(term))) continue;

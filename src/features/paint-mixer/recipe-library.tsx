@@ -1,10 +1,11 @@
 import { primers } from '../../domain/color/primer';
-import { ConfirmDialog } from '../../ui/studio-dialog';
+import { ConfirmDialog, StudioDialog } from '../../ui/studio-dialog';
 import { useStudioNotice } from '../../ui/studio-notice';
 import { StudioHeading } from '../../ui/studio-heading';
+import { searchText } from '../../domain/search-text';
 import { paintBrandLabel } from '../../domain/color/saved-recipe';
-import { useEffect, useState } from 'react';
-import { Archive, ArrowUpRight, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Archive, ArrowUpRight, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   isSavedRecipe,
   mergeRecipeBackup,
@@ -63,6 +64,9 @@ function RecipeApplication({ recipe }: { recipe: SavedRecipe }) {
           {primer.tested ? 'Teste registrado' : 'Simulação'}
         </small>
       )}
+      {recipe.applicationNote && (
+        <small className="recipe-note">{recipe.applicationNote}</small>
+      )}
     </div>
   );
 }
@@ -84,8 +88,28 @@ export function RecipeLibrary({
   const [saved, setSaved] = useState(initial.recipes);
   const [storageError, setStorageError] = useState(initial.storageError);
   const [compare, setCompare] = useState<string[]>([]);
+  const [query, setQuery] = useState('');
   const notify = useStudioNotice();
   const [pendingDelete, setPendingDelete] = useState<SavedRecipe>();
+  const noteDialog = useRef<HTMLDialogElement>(null);
+  const [noteRecipe, setNoteRecipe] = useState<SavedRecipe>();
+  const [note, setNote] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
+  const terms = searchText(query).split(/\s+/).filter(Boolean);
+  const visibleRecipes = saved.filter((recipe) => {
+    const text = searchText(
+      [
+        recipe.name,
+        recipe.applicationNote ?? '',
+        ...recipe.paints.flatMap((paint) => [
+          paint.name,
+          paintBrandLabel(paint.brand),
+          paint.code ?? '',
+        ]),
+      ].join(' '),
+    );
+    return terms.every((term) => text.includes(term));
+  });
 
   useEffect(() => {
     function sync(event: StorageEvent) {
@@ -120,8 +144,10 @@ export function RecipeLibrary({
         ids.filter((id) => next.some((recipe) => recipe.id === id)),
       );
       notify('Receitas atualizadas.');
+      return true;
     } catch {
       notify('Não foi possível gravar no navegador.', true);
+      return false;
     }
   }
 
@@ -165,8 +191,22 @@ export function RecipeLibrary({
       )}
       {storageError && <p role="alert">Receitas locais indisponíveis.</p>}
       {!!saved.length && (
+        <label className="atelier-search">
+          Buscar receitas
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Nome da receita, tinta ou observação"
+          />
+        </label>
+      )}
+      {!!saved.length && !visibleRecipes.length && (
+        <p role="status">Nenhuma receita encontrada.</p>
+      )}
+      {!!visibleRecipes.length && (
         <ul className="swatch-grid saved-swatches" aria-label="Receitas salvas">
-          {saved.map((recipe) => (
+          {visibleRecipes.map((recipe) => (
             <li key={recipe.id}>
               <button className="swatch-action" onClick={() => onLoad(recipe)}>
                 <span
@@ -197,6 +237,18 @@ export function RecipeLibrary({
                   />{' '}
                   Comparar
                 </label>
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-label={`Editar observação de ${recipe.name}`}
+                  onClick={() => {
+                    setNoteRecipe(recipe);
+                    setNote(recipe.applicationNote ?? '');
+                    noteDialog.current?.showModal();
+                  }}
+                >
+                  <Pencil size={17} aria-hidden="true" />
+                </button>
                 <button
                   aria-label="Excluir"
                   title={`Excluir ${recipe.name}`}
@@ -264,6 +316,60 @@ export function RecipeLibrary({
           />
         </label>
       </details>
+      <StudioDialog
+        dialogRef={noteDialog}
+        title="Observação da aplicação"
+        onCancel={(event) => {
+          if (savingNote) event.preventDefault();
+        }}
+      >
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            if (!noteRecipe || savingNote) return;
+            setSavingNote(true);
+            const result = await persist((current) => {
+              if (!current.some((recipe) => recipe.id === noteRecipe.id)) {
+                throw new Error('Recipe no longer exists');
+              }
+              return current.map((recipe) =>
+                recipe.id === noteRecipe.id
+                  ? { ...recipe, applicationNote: note.trim() || undefined }
+                  : recipe,
+              );
+            });
+            setSavingNote(false);
+            if (result) noteDialog.current?.close();
+          }}
+        >
+          <label>
+            Observação da aplicação
+            <textarea
+              value={note}
+              rows={2}
+              maxLength={240}
+              onChange={(event) => setNote(event.target.value)}
+            />
+          </label>
+          <div className="studio-dialog-actions">
+            <button
+              type="button"
+              className="tool-secondary"
+              disabled={savingNote}
+              onClick={() => noteDialog.current?.close()}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="tool-primary"
+              disabled={savingNote}
+            >
+              Salvar observação
+            </button>
+          </div>
+        </form>
+      </StudioDialog>
       <ConfirmDialog
         open={!!pendingDelete}
         title="Excluir receita?"

@@ -98,12 +98,12 @@ test('Painting tips precede the lab and the lab groups tools and saved recipes',
 }) => {
   await page.goto('/');
   const nav = page.getByRole('navigation', { name: 'Principal' });
-  await expect(nav.getByRole('button')).toHaveText([
+  await expect(nav.getByRole('link')).toHaveText([
     'Início',
-    'Dicas de pintura',
+    'Academia',
     'Laboratório de cores',
   ]);
-  await nav.getByRole('button', { name: 'Laboratório de cores' }).click();
+  await nav.getByRole('link', { name: 'Laboratório de cores' }).click();
   await expect(
     page.getByRole('heading', { name: 'Laboratório de cores' }),
   ).toBeFocused();
@@ -171,7 +171,7 @@ test('a cel shading swatch opens the search with its color', async ({
   await expect(
     page.getByRole('textbox', { name: 'Cor desejada', exact: true }),
   ).toHaveValue(hex);
-  await page.goBack();
+  await page.getByRole('button', { name: 'Voltar ao cel shading' }).click();
   await expect(light).toHaveAttribute('aria-label', new RegExp(hex));
   await expect(
     page.getByRole('button', { name: /Amarelo Ouro.*Trocar tinta/ }),
@@ -248,7 +248,7 @@ test('deleting in the atelier preserves a recipe saved in another tab', async ({
     other.getByRole('status').filter({ hasText: 'Receitas atualizadas.' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('button', { name: /Receita da outra aba/ }),
+    page.getByRole('button', { name: /^Receita da outra aba ·/ }),
   ).toBeVisible();
   const previous = page
     .getByRole('listitem')
@@ -262,7 +262,7 @@ test('deleting in the atelier preserves a recipe saved in another tab', async ({
   await page.reload();
   await openLabTool(page, 'Meu ateliê');
   await expect(
-    page.getByRole('button', { name: /Receita da outra aba/ }),
+    page.getByRole('button', { name: /^Receita da outra aba ·/ }),
   ).toBeVisible();
 });
 
@@ -273,7 +273,7 @@ test('mobile keyboard navigation focuses the destination heading', async ({
   await page.goto('/');
   await page
     .getByRole('navigation')
-    .getByRole('button', { name: 'Laboratório de cores' })
+    .getByRole('link', { name: 'Laboratório de cores' })
     .press('Enter');
   await expect(
     page.getByRole('heading', { name: 'Laboratório de cores' }),
@@ -494,7 +494,7 @@ test('offers documented dilution only for a matching airbrush paint', async ({
   await page.getByRole('button', { name: 'Salvar receita' }).click();
   await expect(page.getByText('Receitas atualizadas.')).toBeVisible();
   await openLabTool(page, 'Meu ateliê');
-  await page.getByRole('button', { name: /Receita para aerógrafo/ }).click();
+  await page.getByRole('button', { name: /^Receita para aerógrafo ·/ }).click();
   await expect(application).toHaveValue('airbrush');
   await expect(page.getByLabel('Diluente', { exact: true })).toHaveValue(
     'airbrush-thinner',
@@ -539,17 +539,19 @@ test('browser back closes the recipe dialog and focuses the destination', async 
   ).toBeFocused();
 });
 
-test('the primer tip opens the comparison and keeps the current formula', async ({
+test('the primer lesson opens the comparison and keeps the current formula', async ({
   page,
 }) => {
   await page.goto('/#misturar-tintas');
   await page.getByRole('button', { name: 'Aumentar gotas da tinta 1' }).click();
   await page
     .getByRole('navigation')
-    .getByRole('button', { name: 'Dicas de pintura' })
+    .getByRole('link', { name: 'Academia' })
     .click();
+  await page.getByRole('button', { name: /^Cursos/ }).click();
+  await page.getByRole('button', { name: /^Fundamentos da pintura/ }).click();
   await expect(
-    page.getByRole('heading', { name: 'Por onde começar' }),
+    page.getByRole('heading', { name: 'Preparação e primer' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Comparar sobre primer' }).click();
   await expect(page.getByRole('tab', { name: 'Sobre primer' })).toHaveAttribute(
@@ -584,7 +586,7 @@ test('a saved recipe restores primer and user-reported application test', async 
   await expect(
     page.getByText('Primer preto · 2 camadas · Teste registrado'),
   ).toBeVisible();
-  await page.getByRole('button', { name: /Primer da armadura/ }).click();
+  await page.getByRole('button', { name: /^Primer da armadura ·/ }).click();
   await page.getByRole('tab', { name: 'Sobre primer' }).click();
   await expect(primer).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByLabel('Testei esta aplicação na peça')).toBeChecked();
@@ -592,4 +594,374 @@ test('a saved recipe restores primer and user-reported application test', async 
   await expect(
     page.getByLabel('Testei esta aplicação na peça'),
   ).not.toBeChecked();
+});
+
+test('academy offers distinct tips and a library of free original references', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/#academia');
+  await page.getByRole('button', { name: /^Biblioteca/ }).click();
+  await expect(page.getByRole('heading', { name: 'Biblioteca' })).toBeFocused();
+  await expect(
+    page.getByRole('link', {
+      name: /Uso e limpeza do aerógrafo MP-1003.*Português/,
+    }),
+  ).toHaveAttribute('href', /mp1003\.pdf$/);
+  await expect(
+    page.getByRole('link', { name: /Warhammer Alliance Leaders/ }),
+  ).toHaveAttribute('href', /\.pdf$/);
+  await expect(
+    page.getByRole('link', { name: /Guia de limpeza da Iwata/ }),
+  ).toHaveAttribute('href', /\.pdf$/);
+  await page.getByRole('button', { name: 'Voltar à Academia' }).click();
+  await page.getByRole('button', { name: /^Dicas práticas/ }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Dicas práticas' }),
+  ).toBeFocused();
+  const topics = page.getByRole('group', { name: 'Assuntos de dicas' });
+  await expect(
+    topics.getByRole('button', { name: 'Primeira pintura' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.academy-workshop-video')).toHaveCount(3);
+  const repairs = topics.getByRole('button', { name: 'Retoques e bases' });
+  await repairs.press('Enter');
+  await expect(repairs).toBeFocused();
+  await expect(
+    page.getByRole('heading', { name: 'Retoques e bases' }),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Aerógrafo' })).toHaveCount(0);
+  await expect(page.locator('.academy-workshop-video')).toHaveCount(2);
+  await page.reload();
+  await expect(repairs).toHaveAttribute('aria-pressed', 'true');
+  await topics.getByRole('button', { name: 'Pincéis' }).click();
+  await expect(
+    page.getByRole('link', { name: /Manual de pincéis/ }),
+  ).toBeVisible();
+  await topics.getByRole('button', { name: 'Todos' }).click();
+  await expect(page.locator('.academy-workshop-video')).toHaveCount(14);
+  await expect(page.locator('.academy details')).toHaveCount(0);
+  await expect(
+    page.getByRole('heading', { name: 'Conteúdo do curso' }),
+  ).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    320,
+  );
+});
+
+test('academy keeps video, PDFs and progress together in each course lesson', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('https://www.youtube-nocookie.com/**', (route) =>
+    route.fulfill({ body: '<title>Vídeo de teste</title>' }),
+  );
+  await page.goto('/#academia/cursos/fundamentos/prep');
+  const lesson = page.locator('.academy-watch');
+  await expect(
+    lesson.getByRole('link', { name: /Warhammer Alliance Leaders/ }),
+  ).toBeVisible();
+  await expect(lesson.locator('iframe')).toHaveCount(0);
+  await lesson.getByRole('button', { name: 'Assistir ao vídeo' }).click();
+  await expect(lesson.locator('iframe')).toHaveAttribute('src', /OvpjKfada40/);
+  await lesson
+    .getByRole('button', { name: 'Marcar como visto', exact: true })
+    .click();
+  await lesson.getByRole('button', { name: 'Próxima aula' }).click();
+  await expect(
+    lesson.getByRole('heading', { name: 'Controle do pincel' }),
+  ).toBeFocused();
+  await expect(lesson.locator('iframe')).toHaveCount(0);
+  await page.reload();
+  await expect(
+    lesson.getByRole('heading', { name: 'Controle do pincel' }),
+  ).toBeVisible();
+  await expect(page.getByText('1 de 8 aulas vistas')).toBeVisible();
+});
+
+test('academy filters sixty project videos and sorts by views or likes on mobile', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/#academia/projetos');
+  const media = page.locator('.academy-workshop-grid a');
+  await expect(media).toHaveCount(20);
+  await expect(media.first()).toHaveAttribute('href', /aK_yYlNMOSw/);
+  await page.getByLabel('Ordenar por').selectOption('likes');
+  await expect(media.first()).toHaveAttribute('href', /Tz4X-r1wwFg/);
+  const styles = page.getByRole('group', { name: 'Estilo do projeto' });
+  await styles
+    .getByRole('button', { name: 'Realismo', exact: true })
+    .press('Enter');
+  await expect(media).toHaveCount(20);
+  await expect(media.first()).toHaveAttribute('href', /g8dXskKfEC0/);
+  await styles.getByRole('button', { name: 'Fantasia e wargame' }).click();
+  await expect(media).toHaveCount(20);
+  await expect(
+    page.getByRole('link', { name: /Dragão vermelho de D&D/ }),
+  ).toHaveAttribute('target', '_blank');
+  await page.reload();
+  await expect(
+    styles.getByRole('button', { name: 'Fantasia e wargame' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    320,
+  );
+  await page.getByRole('button', { name: 'Voltar à Academia' }).click();
+  await page.getByRole('button', { name: /^Treinos de pintura/ }).click();
+  await expect(media).toHaveCount(4);
+  await page.goBack();
+  await page.getByRole('button', { name: /^Materiais e kits/ }).click();
+  await page.getByRole('button', { name: 'Kit inicial', exact: true }).click();
+  await expect(media).toHaveCount(2);
+});
+
+test('materials roadmap compares named products and restores the selected stage', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/academia/materiais');
+  await expect(page).toHaveTitle(/Materiais para pintar miniaturas/);
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Principal' })
+      .getByRole('link', { name: 'Academia' }),
+  ).toHaveAttribute('href', '/academia');
+  const stages = page.getByRole('list', { name: 'Etapas do roadmap' });
+  await expect(stages.getByRole('button')).toHaveCount(4);
+  await page.getByRole('button', { name: 'Comparar materiais' }).click();
+  await expect(page.getByRole('link', { name: /Norton Lixa/ })).toBeVisible();
+  await stages.getByRole('button', { name: /Pintar a pincel/ }).press('Enter');
+  await expect(
+    page.getByRole('link', { name: /Corfix Decorfix/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: /Warpaints Fanatic/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Lista de materiais' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Aprender', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Quando avançar' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Aprendizado da etapa' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Lista de materiais' }),
+  ).toHaveCount(0);
+  await page.getByRole('link', { name: /Assistir à aula de controle/ }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Controle do pincel' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Voltar ao roadmap' }).click();
+  await expect(
+    page.getByRole('link', { name: /Assistir à aula de controle/ }),
+  ).toBeFocused();
+  await expect(
+    stages.getByRole('button', { name: /Pintar a pincel/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await stages.getByRole('button', { name: /Opcional Aerógrafo/ }).click();
+  await page.getByRole('button', { name: 'Comparar materiais' }).click();
+  await page.reload();
+  await expect(
+    page.getByRole('button', { name: 'Comparar materiais' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    page.getByRole('link', { name: /Wimpel MP-1003/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: /Iwata Eclipse HP-CS/ }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Aprender', exact: true }).click();
+  await page.getByRole('link', { name: /Ver vídeos de aerógrafo/ }).click();
+  await expect(
+    page.getByRole('button', { name: 'Aerógrafo', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.academy-workshop-video')).toHaveCount(3);
+  await page.getByRole('button', { name: 'Voltar ao roadmap' }).click();
+  await expect(
+    page.getByRole('link', { name: /Ver vídeos de aerógrafo/ }),
+  ).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    320,
+  );
+});
+
+test('first miniature shortcut, kit and academy history connect the beginner journey', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/academia');
+  await page.getByRole('button', { name: 'Começar Fundamentos' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Preparação e primer' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Ver kit essencial' }).click();
+  const essentials = page.getByRole('region', {
+    name: 'Essenciais para a primeira peça',
+  });
+  await expect(essentials).toBeVisible();
+  await expect(
+    essentials.getByText('Peça e primer', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Kit inicial', exact: true }),
+  ).toHaveCount(0);
+  await expect(essentials.locator('.academy-kit-visuals svg')).toHaveCount(3);
+  await page.getByRole('button', { name: 'Voltar à aula' }).click();
+  await page.getByRole('button', { name: 'Comparar sobre primer' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Mistura de cores' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Voltar à aula' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Preparação e primer' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Ver kit essencial' }).click();
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: 'Academia' })
+    .click();
+  await expect(
+    page.getByRole('heading', { name: 'Pintar minha primeira miniatura' }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(essentials).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    320,
+  );
+});
+
+test('academy searches techniques and filters confirmed Portuguese projects', async ({
+  page,
+}) => {
+  await page.goto('/academia/projetos');
+  const search = page.getByRole('searchbox', { name: 'Buscar projetos' });
+  await search.fill('pele realits');
+  await expect(
+    page.getByRole('link', { name: /Pele realista em impressão 3D/ }),
+  ).toBeVisible();
+  await search.fill('pele realista');
+  await expect(
+    page.getByRole('link', { name: /Pintura de rosto realista/ }),
+  ).toBeVisible();
+  await search.fill('sem resultados');
+  await expect(page.getByText(/Nenhum vídeo encontrado/)).toBeVisible();
+  await search.clear();
+  await page.getByLabel('Em português').check();
+  await expect(page.locator('.academy-workshop-video')).toHaveCount(8);
+  await expect(
+    page.getByRole('link', { name: /Goku em cel shading.*Português/ }),
+  ).toBeVisible();
+  await search.fill('pele');
+  const real = page.getByRole('button', { name: 'Realismo', exact: true });
+  await real.click();
+  await page.getByLabel('Ordenar por').selectOption('likes');
+  await page.reload();
+  await expect(search).toHaveValue('pele');
+  await expect(real).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByLabel('Em português')).toBeChecked();
+  await expect(page.getByLabel('Ordenar por')).toHaveValue('likes');
+  await expect(
+    page.getByRole('link', { name: /Pele pálida do Kratos/ }),
+  ).toBeVisible();
+  const externalSearch = page.getByRole('link', { name: /Buscar no YouTube/ });
+  await expect(externalSearch).toHaveAttribute('target', '_blank');
+  const destination = new URL((await externalSearch.getAttribute('href'))!);
+  expect(destination.origin + destination.pathname).toBe(
+    'https://www.youtube.com/results',
+  );
+  expect(destination.searchParams.get('search_query')).toBe(
+    'pele pintura de miniaturas Realismo em português',
+  );
+});
+
+test('atelier searches by paint and saves application notes across reloads', async ({
+  page,
+}) => {
+  await page.goto('/#misturar-tintas');
+  await page.getByRole('button', { name: 'Salvar mistura' }).click();
+  await page.getByLabel('Nome da receita').fill('Armadura de teste');
+  await page
+    .getByRole('textbox', { name: /Observação da aplicação/ })
+    .fill('Ombreira sobre primer cinza.');
+  await page.getByRole('button', { name: 'Salvar receita' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.goto('/#meu-atelie');
+  await page.reload();
+  const search = page.getByRole('searchbox', { name: 'Buscar receitas' });
+  await search.fill('vermelho');
+  await expect(page.getByText('Ombreira sobre primer cinza.')).toBeVisible();
+  await search.fill('sem correspondência');
+  await expect(page.getByText('Nenhuma receita encontrada.')).toBeVisible();
+  await search.fill('armadura ombreira');
+  await expect(
+    page.getByRole('button', { name: /^Armadura de teste ·/ }),
+  ).toBeVisible();
+  await page
+    .getByRole('button', { name: 'Editar observação de Armadura de teste' })
+    .click();
+  await page
+    .getByRole('textbox', { name: /Observação da aplicação/ })
+    .fill('Capacete sobre primer branco.');
+  await page.getByRole('button', { name: 'Salvar observação' }).click();
+  await search.fill('capacete');
+  await expect(page.getByText('Capacete sobre primer branco.')).toBeVisible();
+});
+
+test('academy roadmap opens the expanded course', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/#academia');
+  await page.getByRole('button', { name: /^Cursos/ }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Cursos', exact: true }),
+  ).toBeFocused();
+  const roadmap = page.locator('.academy-roadmap');
+  await expect(roadmap.getByRole('listitem')).toHaveCount(3);
+  await expect(roadmap.locator('img[src^="https://i.ytimg.com/"]')).toHaveCount(
+    3,
+  );
+  await roadmap.getByRole('button', { name: /^Cel shading anime 2D/ }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Cel shading anime 2D' }),
+  ).toBeFocused();
+  const lessons = page.locator('.academy-lesson-list');
+  await expect(
+    lessons.getByRole('button', { name: 'Contornos e line art' }),
+  ).toBeVisible();
+  await expect(
+    lessons.getByRole('button', { name: 'Preparação e primer' }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Voltar aos cursos' }).click();
+  await expect(roadmap).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    320,
+  );
+});
+
+test('academy restores the active lesson from URLs and browser history', async ({
+  page,
+}) => {
+  await page.goto('/#academia/cursos/fundamentos/prep');
+  const primer = page.getByRole('heading', { name: 'Preparação e primer' });
+  await expect(primer).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: /Warhammer Alliance Leaders/ }),
+  ).toHaveAttribute('href', /\.pdf$/);
+
+  await page.getByRole('button', { name: 'Camadas de base' }).click();
+  await expect(page).toHaveURL(/#academia\/cursos\/fundamentos\/base$/);
+  await page.goBack();
+  await expect(primer).toBeVisible();
+
+  await page.getByRole('button', { name: 'Comparar sobre primer' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Mistura de cores' }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(primer).toBeVisible();
+  await page.getByRole('button', { name: 'Voltar aos cursos' }).click();
+  await expect(page).toHaveURL(/#academia\/cursos$/);
 });

@@ -90,18 +90,20 @@ aside {
   flex-direction: column;
   gap: 16px;
 }
-nav {
+.workspace > aside nav {
   display: grid;
   gap: 4px;
   flex: 1;
   align-content: start;
 }
 .brand,
+.workspace > aside nav a,
 button {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+.workspace > aside nav a,
 button {
   cursor: pointer;
   border: 0;
@@ -119,6 +121,7 @@ button {
     --motion-ui: 0ms;
   }
 }
+.workspace > aside nav a:hover,
 button:hover,
 button[aria-current] {
   background: var(--surface-hover);
@@ -131,7 +134,11 @@ button:disabled {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
-main {
+.workspace-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-section);
   width: 100%;
   min-width: 0;
   max-width: 82rem;
@@ -289,10 +296,10 @@ input[type='color'] {
     grid-template-columns: 1fr;
     align-content: start;
   }
-  main {
+  .workspace-content {
     padding: 16px;
   }
-  nav button {
+  .workspace > aside nav a {
     min-height: 44px;
   }
 }

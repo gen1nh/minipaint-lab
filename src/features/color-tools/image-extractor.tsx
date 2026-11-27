@@ -3,12 +3,24 @@ import { Crosshair, ImagePlus, ArrowRight } from 'lucide-react';
 import { ColorField } from '../../ui/color-field';
 import { useRef, useState } from 'react';
 import { dominantColors } from '../../domain/color/image-palette';
+import ReactCrop, { type PercentCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 export function ImageExtractor({ onPick }: { onPick: (hex: string) => void }) {
   const notify = useStudioNotice();
   const failed = useRef(false);
   const [palette, setPalette] = useState<string[]>([]);
   const generation = useRef(0);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const cropTrigger = useRef<HTMLButtonElement>(null);
+  const [cropping, setCropping] = useState(false);
+  const [region, setRegion] = useState<PercentCrop>();
+  const [crop, setCrop] = useState<PercentCrop>({
+    unit: '%',
+    x: 10,
+    y: 10,
+    width: 80,
+    height: 80,
+  });
   const [point, setPoint] = useState({
     x: 0,
     y: 0,
@@ -19,9 +31,15 @@ export function ImageExtractor({ onPick }: { onPick: (hex: string) => void }) {
   const [transparent, setTransparent] = useState(false);
   const [ready, setReady] = useState(false),
     [picked, setPicked] = useState('#808080');
+  function closeCrop() {
+    setCropping(false);
+    requestAnimationFrame(() => cropTrigger.current?.focus());
+  }
   async function load(file: File) {
     const request = ++generation.current;
     setReady(false);
+    setCropping(false);
+    setRegion(undefined);
     if (failed.current) {
       notify('');
       failed.current = false;
@@ -67,6 +85,36 @@ export function ImageExtractor({ onPick }: { onPick: (hex: string) => void }) {
       }
     }
   }
+  function extractRegion(area?: PercentCrop) {
+    const image = canvas.current;
+    const context = image?.getContext('2d');
+    if (!image || !context) return;
+    const x = Math.min(
+      image.width - 1,
+      Math.floor((image.width * (area?.x ?? 0)) / 100),
+    );
+    const y = Math.min(
+      image.height - 1,
+      Math.floor((image.height * (area?.y ?? 0)) / 100),
+    );
+    const width = Math.min(
+      image.width - x,
+      Math.max(1, Math.round((image.width * (area?.width ?? 100)) / 100)),
+    );
+    const height = Math.min(
+      image.height - y,
+      Math.max(1, Math.round((image.height * (area?.height ?? 100)) / 100)),
+    );
+    const colors = dominantColors(
+      context.getImageData(x, y, width, height).data,
+    );
+    setPalette(colors);
+    setPicked(colors[0] ?? '#808080');
+    setPoint((current) => ({ ...current, sampled: false }));
+    setTransparent(false);
+    setRegion(area);
+    closeCrop();
+  }
   function sample(x: number, y: number) {
     const c = canvas.current;
     if (!c || !ready) return;
@@ -110,25 +158,45 @@ export function ImageExtractor({ onPick }: { onPick: (hex: string) => void }) {
           />
         </label>
         <div className="image-sampling" hidden={!ready}>
-          <canvas
-            ref={canvas}
-            className="image-canvas"
-            aria-label="Imagem para selecionar uma cor"
-            onClick={(event) => {
-              const bounds = event.currentTarget.getBoundingClientRect();
-              sample(
-                Math.floor(
-                  ((event.clientX - bounds.left) * event.currentTarget.width) /
-                    bounds.width,
-                ),
-                Math.floor(
-                  ((event.clientY - bounds.top) * event.currentTarget.height) /
-                    bounds.height,
-                ),
-              );
+          <ReactCrop
+            crop={cropping ? crop : undefined}
+            disabled={!cropping}
+            onChange={(_, percent) => setCrop(percent)}
+            ariaLabels={{
+              cropArea: 'Área da imagem para recorte',
+              nwDragHandle: 'Canto superior esquerdo',
+              nDragHandle: 'Borda superior',
+              neDragHandle: 'Canto superior direito',
+              eDragHandle: 'Borda direita',
+              seDragHandle: 'Canto inferior direito',
+              sDragHandle: 'Borda inferior',
+              swDragHandle: 'Canto inferior esquerdo',
+              wDragHandle: 'Borda esquerda',
             }}
-          />
-          {point.sampled && (
+          >
+            <canvas
+              ref={canvas}
+              className="image-canvas"
+              aria-label="Imagem para selecionar uma cor"
+              onClick={(event) => {
+                if (cropping) return;
+                const bounds = event.currentTarget.getBoundingClientRect();
+                sample(
+                  Math.floor(
+                    ((event.clientX - bounds.left) *
+                      event.currentTarget.width) /
+                      bounds.width,
+                  ),
+                  Math.floor(
+                    ((event.clientY - bounds.top) *
+                      event.currentTarget.height) /
+                      bounds.height,
+                  ),
+                );
+              }}
+            />
+          </ReactCrop>
+          {point.sampled && !cropping && (
             <span
               aria-hidden="true"
               className="image-sample-marker"
@@ -142,6 +210,72 @@ export function ImageExtractor({ onPick }: { onPick: (hex: string) => void }) {
       </div>
       {ready && (
         <div className="tool-settings">
+          <div className="image-crop-actions">
+            {cropping ? (
+              <>
+                <button
+                  type="button"
+                  className="tool-primary"
+                  disabled={!crop.width || !crop.height}
+                  onClick={() => extractRegion(crop)}
+                >
+                  Extrair cores do recorte
+                </button>
+                <button
+                  type="button"
+                  className="tool-secondary"
+                  onClick={closeCrop}
+                >
+                  Cancelar recorte
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  ref={cropTrigger}
+                  className="tool-secondary"
+                  onClick={() => {
+                    setCrop(
+                      region ?? {
+                        unit: '%',
+                        x: 10,
+                        y: 10,
+                        width: 80,
+                        height: 80,
+                      },
+                    );
+                    setCropping(true);
+                    requestAnimationFrame(() => {
+                      canvas.current
+                        ?.closest('.ReactCrop')
+                        ?.querySelector<HTMLElement>(
+                          '[aria-label="Área da imagem para recorte"]',
+                        )
+                        ?.focus();
+                    });
+                  }}
+                >
+                  Recortar referência
+                </button>
+                {region && (
+                  <button
+                    type="button"
+                    className="tool-secondary"
+                    onClick={() => extractRegion()}
+                  >
+                    Usar imagem inteira
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+          {region && !cropping && (
+            <small role="status">Paleta extraída do recorte.</small>
+          )}
+          {!palette.length && (
+            <p role="status">Nenhuma cor visível na seleção.</p>
+          )}
           <ColorField
             label="Cor selecionada"
             hex={picked}

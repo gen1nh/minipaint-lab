@@ -20,14 +20,14 @@
 .workspace .brand img {
   flex: none;
 }
-.workspace nav button {
+.workspace > aside nav a {
   width: 100%;
   min-height: 44px;
 }
-.workspace nav svg {
+.workspace > aside nav svg {
   flex-shrink: 0;
 }
-.workspace nav button[aria-current] {
+.workspace > aside nav a[aria-current] {
   background: var(--selection);
   color: var(--text);
   border-color: transparent;
@@ -182,10 +182,6 @@
   --shortcut-surface: var(--tone-atelier);
   --shortcut-ink: var(--ink-atelier);
 }
-.home-tools,
-.home-academy {
-  margin-top: clamp(24px, 4vw, 40px);
-}
 .home-tools > h2,
 .home-academy h2 {
   font-size: clamp(1.4rem, 2.4vw, 2rem);
@@ -237,7 +233,7 @@
     gap: 8px;
     padding: 12px;
   }
-  .workspace nav {
+  .workspace > aside nav {
     position: fixed;
     z-index: 5;
     inset: auto 0 0;
@@ -249,7 +245,7 @@
     background: var(--surface);
     box-shadow: 0 -4px 18px rgb(0 0 0 / 10%);
   }
-  .workspace nav button {
+  .workspace > aside nav a {
     flex-direction: column;
     justify-content: center;
     text-align: center;
@@ -262,7 +258,7 @@
   .nav-label-extended {
     display: none;
   }
-  .workspace main {
+  .workspace > .workspace-content {
     padding-bottom: calc(88px + env(safe-area-inset-bottom));
   }
   .workspace main :focus-visible {
@@ -287,12 +283,8 @@
   }
 }
 
-.lab-return {
-  min-height: 44px;
-  margin: -8px 0 12px;
-  color: var(--muted);
-  font-size: 0.875rem;
-  font-weight: 700;
+.page-back {
+  justify-self: start;
 }
 
 @media (prefers-reduced-motion: no-preference) {
