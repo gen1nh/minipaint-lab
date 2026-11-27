@@ -55,14 +55,14 @@ export function StudioHome({
       <section className="home-academy">
         <StudioIcon name="book" size={36} />
         <div>
-          <h2>Dicas de pintura</h2>
+          <h2>Academia</h2>
           <p>
             Dicas grátis de preparação, cor, luz e sombra para pintar
             miniaturas.
           </p>
         </div>
         <button className="tool-primary" onClick={onAcademy}>
-          Ver dicas <ArrowRight size={18} aria-hidden="true" />
+          Abrir Academia <ArrowRight size={18} aria-hidden="true" />
         </button>
       </section>
     </div>

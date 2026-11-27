@@ -17,3 +17,12 @@ Instrument Sans Project Authors © 2022. The variable Latin WOFF2 is from the [G
 ## SVGs de Dragon Ball fornecidos via Figma
 
 `Kid Goku.svg` e `Goku SVG.svg` foram vetorizados no Figma pelo responsável pelo Pincel Guia e exportados para o projeto. Goku é um personagem de Dragon Ball. O crédito desta seção refere-se à autoria dos vetores.
+
+## Fuse.js
+
+Fuse.js 7.5.0, Kiro Risk and contributors, under Apache-2.0. Used for typo-tolerant search in Academy projects. [Upstream repository](https://github.com/krisk/Fuse) · [License](licenses/fuse.js.txt).
+## Recorte e auditorias automatizadas
+
+- React Image Crop 11.1.2, Dominic Tobias, ISC. [Projeto](https://github.com/dominictobias/react-image-crop) · [Licença](licenses/react-image-crop.txt).
+- axe-core 4.14.1, Deque Systems, MPL-2.0. Dependência de desenvolvimento. [Projeto](https://github.com/dequelabs/axe-core) · [Licença](licenses/axe-core.txt) · [Avisos incluídos](licenses/axe-core-third-party.txt).
+- Lighthouse CI 0.16.1, Google LLC e colaboradores, Apache-2.0. Dependência de desenvolvimento. [Projeto](https://github.com/GoogleChrome/lighthouse-ci) · [Licença](licenses/lighthouse-ci.txt).

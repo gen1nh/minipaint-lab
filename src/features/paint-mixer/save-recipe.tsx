@@ -24,6 +24,7 @@ export function SaveRecipe({
   hex: string;
 }) {
   const [name, setName] = useState('');
+  const [applicationNote, setApplicationNote] = useState('');
   const notify = useStudioNotice();
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -74,6 +75,7 @@ export function SaveRecipe({
                 {
                   id: crypto.randomUUID(),
                   name: name.trim(),
+                  applicationNote: applicationNote.trim() || undefined,
                   paints: paints.map(
                     ({
                       name,
@@ -101,6 +103,7 @@ export function SaveRecipe({
               ]);
               onSaved();
               setName('');
+              setApplicationNote('');
               dialog.current?.close();
               notify('Receitas atualizadas.');
             } catch {
@@ -117,6 +120,16 @@ export function SaveRecipe({
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={100}
+            />
+          </label>
+          <label>
+            Observação da aplicação (opcional)
+            <textarea
+              value={applicationNote}
+              onChange={(event) => setApplicationNote(event.target.value)}
+              maxLength={240}
+              rows={2}
+              placeholder="Peça, região ou resultado do teste"
             />
           </label>
           {storageError && (

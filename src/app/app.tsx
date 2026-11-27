@@ -4,6 +4,7 @@ import { StudioNoticeProvider } from '../ui/studio-notice';
 import { StudioIcon } from '../ui/studio-icon';
 import {
   lazy,
+  type MouseEvent,
   Suspense,
   useEffect,
   useLayoutEffect,
@@ -15,6 +16,7 @@ import type { Preparation } from '../domain/color/dilution';
 import type { RecipePaint } from '../domain/color/saved-recipe';
 import { StudioHome } from './studio-home';
 import './workspace.css';
+import { publicPages } from './public-pages';
 import { StudioShortcuts, type LabTool } from './studio-shortcuts';
 import { StudioHeading } from '../ui/studio-heading';
 
@@ -54,10 +56,12 @@ const pages = {
   atelier: 'meu-atelie',
 } satisfies Record<Page, string>;
 function readPage(): Page {
+  const segment = (location.hash.slice(1) || location.pathname.slice(1)).split(
+    '/',
+  )[0];
   return (
-    (Object.keys(pages) as Page[]).find(
-      (page) => pages[page] === location.hash.slice(1),
-    ) ?? 'home'
+    (Object.keys(pages) as Page[]).find((page) => pages[page] === segment) ??
+    'home'
   );
 }
 const themeKey = 'minipaint:theme';
@@ -70,6 +74,19 @@ function readTheme(): 'dark' | 'light' {
 }
 export function App() {
   const [page, setPage] = useState(readPage);
+  useEffect(() => {
+    const titlePath = (
+      location.hash
+        ? '/' + location.hash.slice(1)
+        : location.pathname.replace(/\/$/, '') || '/'
+    ) as keyof typeof publicPages;
+    const pagePath = (
+      page === 'home' ? '/' : '/' + pages[page]
+    ) as keyof typeof publicPages;
+    document.title =
+      (publicPages[titlePath] ?? publicPages[pagePath])?.title ??
+      'Meu ateliê | Pincel Guia';
+  }, [page]);
   const [visited, setVisited] = useState(() => new Set([page]));
   const [autoSearch, setAutoSearch] = useState(false);
   const [primerRequest, setPrimerRequest] = useState(0);
@@ -136,18 +153,44 @@ export function App() {
   });
   function go(next: Page) {
     if (next === page) {
+      if (next === 'academy') {
+        const route = location.hash.slice(1) || location.pathname.slice(1);
+        if (route.replace(/\/$/, '') !== 'academia') location.hash = 'academia';
+      }
       window.scrollTo(0, 0);
       return;
     }
     const hash = pages[next];
+    const returnLabels: Partial<Record<Page, string>> = {
+      academy: 'Voltar à aula',
+      lab: 'Voltar à mistura',
+      cel: 'Voltar ao cel shading',
+      colors: 'Voltar à busca de cores',
+      atelier: 'Voltar ao ateliê',
+    };
+    const toolReturn = ['lab', 'colors', 'cel', 'atelier'].includes(next)
+      ? returnLabels[page]
+      : undefined;
     history.pushState(
-      null,
+      toolReturn ? { toolReturn } : null,
       '',
-      hash ? '#' + hash : location.pathname + location.search,
+      '/' + location.search + (hash ? '#' + hash : ''),
     );
     focusHeading.current = true;
     setVisited((current) => new Set([...current, next]));
     setPage(next);
+  }
+  function followPage(event: MouseEvent<HTMLAnchorElement>, next: Page) {
+    if (
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      event.button !== 0
+    )
+      return;
+    event.preventDefault();
+    go(next);
   }
   function openMix(
     paints: RecipePaint[],
@@ -195,23 +238,23 @@ export function App() {
             </strong>
           </div>
           <nav aria-label="Principal">
-            <button
+            <a
               aria-current={page === 'home' ? 'page' : undefined}
-              onClick={() => go('home')}
+              href="/"
+              onClick={(event) => followPage(event, 'home')}
             >
               <StudioIcon name="home" size={19} /> Início
-            </button>
-            <button
+            </a>
+            <a
               aria-current={page === 'academy' ? 'page' : undefined}
-              aria-label="Dicas de pintura"
-              onClick={() => go('academy')}
+              aria-label="Academia"
+              href="/academia"
+              onClick={(event) => followPage(event, 'academy')}
             >
               <StudioIcon name="book" size={19} />
-              <span>
-                Dicas<span className="nav-label-extended"> de pintura</span>
-              </span>
-            </button>
-            <button
+              <span>Academia</span>
+            </a>
+            <a
               aria-label="Laboratório de cores"
               aria-current={
                 page === 'laboratory'
@@ -220,13 +263,14 @@ export function App() {
                     ? 'location'
                     : undefined
               }
-              onClick={() => go('laboratory')}
+              href="/laboratorio"
+              onClick={(event) => followPage(event, 'laboratory')}
             >
               <StudioIcon name="palette" size={19} />
               <span>
                 Laboratório<span className="nav-label-extended"> de cores</span>
               </span>
-            </button>
+            </a>
           </nav>
           <button
             className="theme-toggle"
@@ -247,10 +291,22 @@ export function App() {
             <span>Alternar tema</span>
           </button>
         </aside>
-        <main ref={main} id="conteudo" tabIndex={-1}>
+        <main
+          ref={main}
+          id="conteudo"
+          className="workspace-content"
+          tabIndex={-1}
+        >
           {inLabTool && (
-            <button className="lab-return" onClick={() => go('laboratory')}>
-              <ArrowLeft size={17} aria-hidden="true" /> Laboratório de cores
+            <button
+              className="tool-secondary page-back"
+              onClick={() => {
+                if (history.state?.toolReturn) history.back();
+                else go('laboratory');
+              }}
+            >
+              <ArrowLeft size={17} aria-hidden="true" />
+              {history.state?.toolReturn ?? 'Laboratório de cores'}
             </button>
           )}
           <Suspense fallback={<p role="status">Carregando ferramenta…</p>}>
@@ -321,6 +377,7 @@ export function App() {
                   go('lab');
                 }}
                 onShading={() => go('cel')}
+                onMixer={() => go('lab')}
               />
             )}
           </Suspense>

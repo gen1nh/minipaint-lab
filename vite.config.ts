@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { publicHtml } from './build/public-html';
 
 function catalogAsset(): Plugin {
   const read = (file: string) =>
@@ -40,6 +41,5 @@ function catalogAsset(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), catalogAsset()],
-  base: './',
+  plugins: [react(), tailwindcss(), catalogAsset(), publicHtml()],
 });

@@ -1,0 +1,280 @@
+.academy-material-workshop > h2 {
+  margin-bottom: 16px;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.academy-material-roadmap {
+  display: grid;
+  gap: 16px;
+}
+
+.academy-material-stages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  align-content: start;
+}
+.academy-material-stages button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px;
+  gap: 8px;
+  background: var(--surface);
+  border-radius: var(--radius-control);
+}
+.academy-material-stages button:hover {
+  background: var(--surface-hover);
+}
+.academy-material-stages button[aria-pressed='true'] {
+  background: var(--selection);
+}
+.academy-station-label {
+  display: grid;
+  line-height: 1.2;
+}
+.academy-station-label small {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.academy-station-label strong {
+  overflow-wrap: anywhere;
+}
+.academy-station-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  color: var(--accent);
+  background: var(--field);
+}
+[aria-pressed='true'] > .academy-station-icon {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.academy-station-arrow {
+  display: none;
+  color: var(--muted);
+}
+
+.academy-material-content {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.academy-material-stage-header {
+  --stage-tone: var(--tone-search);
+  --stage-ink: var(--ink-search);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 124px;
+  padding: var(--space-panel);
+  border-radius: var(--radius-studio);
+  color: var(--stage-ink);
+  background: var(--stage-tone);
+}
+.academy-material-stage-header[data-stage='primeira-pintura'] {
+  --stage-tone: var(--tone-academy);
+  --stage-ink: var(--ink-academy);
+}
+.academy-material-stage-header[data-stage='acabamento'] {
+  --stage-tone: var(--tone-shading);
+  --stage-ink: var(--ink-shading);
+}
+.academy-material-stage-header[data-stage='aerografo'],
+.academy-material-stage-header p {
+  margin-bottom: 6px;
+  color: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.academy-material-stage-header h3 {
+  font-size: clamp(1.5rem, 4vw, 2.3rem);
+  font-weight: 700;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.academy-stage-emblem {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: clamp(48px, 9vw, 76px);
+  aspect-ratio: 1;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--stage-ink);
+}
+
+.academy-material-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.academy-material-switch button {
+  gap: 6px;
+  min-height: 44px;
+}
+.academy-material-switch button[aria-pressed='true'] {
+  background: var(--selection);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.academy-material-lesson,
+.academy-material-buy-panel,
+.academy-material-kit {
+  display: grid;
+  gap: 16px;
+  padding: var(--space-panel);
+  border-radius: var(--radius-studio);
+  background: var(--surface);
+}
+.academy-material-kit > h3,
+.academy-material-content h4,
+.academy-material-list h5 {
+  font-weight: 700;
+}
+.academy-material-skills {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+.academy-material-skills li {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+.academy-material-skills svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--accent);
+}
+.academy-material-checkpoint {
+  padding: 12px;
+  border-radius: var(--radius-control);
+  background: var(--field);
+}
+.academy-material-checkpoint p {
+  margin: 4px 0 0;
+}
+.academy-material-lesson > a,
+.academy-material-next {
+  justify-self: start;
+}
+
+.academy-material-list > li {
+  display: grid;
+  gap: 10px;
+  padding-block: 14px;
+}
+.academy-material-list > li + li {
+  border-top: 1px solid var(--field);
+}
+.academy-material-list dl {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+}
+.academy-material-list dd {
+  overflow-wrap: anywhere;
+}
+.academy-material-list dt {
+  margin-bottom: 3px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.academy-material-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.academy-material-list a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.academy-material-list svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.academy-kit-visuals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 8px;
+}
+.academy-kit-visuals li {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 5px;
+  padding: 12px;
+  border-radius: var(--radius-control);
+  background: var(--field);
+}
+.academy-kit-visuals svg {
+  color: var(--accent);
+}
+.academy-kit-colors {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+.academy-kit-colors span {
+  width: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--swatch-edge);
+}
+
+@media (max-width: 520px) {
+  .academy-material-stages button {
+    gap: 6px;
+  }
+  .academy-station-icon {
+    width: 24px;
+  }
+  .academy-station-label strong {
+    font-size: 0.875rem;
+  }
+  .academy-material-switch {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .academy-material-switch button {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    text-align: center;
+    align-content: center;
+    min-height: 60px;
+    padding: 6px 3px;
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .academy-material-roadmap {
+    grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+    gap: var(--space-section);
+    align-items: start;
+  }
+  .academy-material-stages {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .academy-material-stages button {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 64px;
+    padding: 10px;
+  }
+  .academy-station-arrow {
+    display: block;
+  }
+}

@@ -13,6 +13,7 @@ export type RecipePaint = {
 export type SavedRecipe = {
   id: string;
   name: string;
+  applicationNote?: string;
   paints: RecipePaint[];
   thinner: number;
   hex: string;
@@ -27,6 +28,9 @@ export function isSavedRecipe(x: unknown): x is SavedRecipe {
     (r.primer === undefined || isPrimerSetup(r.primer)) &&
     typeof r.id === 'string' &&
     typeof r.name === 'string' &&
+    (r.applicationNote === undefined ||
+      (typeof r.applicationNote === 'string' &&
+        r.applicationNote.length <= 240)) &&
     typeof r.hex === 'string' &&
     /^#[0-9a-f]{6}$/i.test(r.hex) &&
     Number.isSafeInteger(r.thinner) &&
@@ -60,6 +64,7 @@ export function isSavedRecipe(x: unknown): x is SavedRecipe {
 function recipeKey(r: SavedRecipe) {
   return JSON.stringify([
     r.name,
+    r.applicationNote?.trim() || null,
     r.thinner,
     r.preparation?.application ?? null,
     r.preparation?.diluent ?? null,

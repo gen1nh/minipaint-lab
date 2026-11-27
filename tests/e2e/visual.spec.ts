@@ -1,5 +1,57 @@
 import { openLabTool, openMixerFromHome } from './navigation';
 import { test, expect } from '@playwright/test';
+
+test('all sections share the workspace gutters without horizontal overflow', async ({
+  page,
+}) => {
+  const routes = [
+    '/',
+    '/laboratorio',
+    '/misturar-tintas',
+    '/encontrar-cores',
+    '/cel-shading',
+    '/#meu-atelie',
+    '/academia',
+    '/#academia/cursos',
+    '/#academia/cursos/fundamentos',
+    '/#academia/dicas',
+    '/#academia/biblioteca',
+    '/academia/projetos',
+    '/#academia/treinos',
+    '/academia/materiais',
+    '/#academia/materiais/preparo?painel=kit',
+  ];
+  for (const width of [320, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes) {
+      await page.goto(route);
+      const workspace = page.locator('.workspace > main');
+      await expect(workspace.getByRole('heading', { level: 1 })).toBeVisible();
+      const layout = await workspace.evaluate((main) => {
+        const bounds = main.getBoundingClientRect();
+        const heading = [...main.querySelectorAll('h1')].find(
+          (item) => item.getClientRects().length,
+        );
+        const style = getComputedStyle(main);
+        return {
+          width: bounds.width,
+          inset: heading?.getBoundingClientRect().left ?? -1,
+          leftEdge: bounds.left + parseFloat(style.paddingLeft),
+          rightEdge: bounds.right - parseFloat(style.paddingRight),
+          contentRight: heading?.getBoundingClientRect().right ?? -1,
+          scrollWidth: document.documentElement.scrollWidth,
+        };
+      });
+      expect(layout.width, route).toBeLessThanOrEqual(1312);
+      expect(layout.inset, route).toBeGreaterThanOrEqual(layout.leftEdge - 1);
+      expect(layout.contentRight, route).toBeLessThanOrEqual(
+        layout.rightEdge + 1,
+      );
+      expect(layout.scrollWidth, route).toBeLessThanOrEqual(width + 1);
+    }
+  }
+});
+
 for (const width of [390, 1280]) {
   test('color workspace ' + width, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
@@ -34,9 +86,7 @@ for (const width of [390, 1280]) {
     await expect(
       page.getByRole('button', { name: 'Buscar tintas próximas' }),
     ).toBeEnabled();
-    await page
-      .getByRole('button', { name: 'Buscar tintas próximas' })
-      .click();
+    await page.getByRole('button', { name: 'Buscar tintas próximas' }).click();
     await expect(
       page.getByRole('heading', { name: 'Tintas próximas' }),
     ).toBeVisible();
