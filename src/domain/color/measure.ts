@@ -1,2 +1,0 @@
-export function dropsToMl(drops:number,dropsPerMl:number){if(!Number.isFinite(drops)||drops<0||!Number.isFinite(dropsPerMl)||dropsPerMl<=0)throw new RangeError('Invalid volume');return drops/dropsPerMl}
-export function portionCost(drops:number,dropsPerMl:number,bottleMl:number,price:number){if(!Number.isFinite(bottleMl)||bottleMl<=0||!Number.isFinite(price)||price<0)throw new RangeError('Invalid price or bottle');return dropsToMl(drops,dropsPerMl)*price/bottleMl}

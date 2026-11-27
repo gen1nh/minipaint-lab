@@ -6,3 +6,14 @@ Ronald van Wijnen © 2025, MIT. https://github.com/rvanwijnen/spectral.js — de
 
 ## Miniature Paints
 Commercial paint swatches imported from https://github.com/Arcturus5404/miniature-paints (Copyright 2022 Rick Fleuren, MIT). Full license: licenses/miniature-paints.txt. Each brand JSON records its original URL and blob SHA. Swatches are digital approximations, not certified measurements. Manufacturer names identify products, not endorsement.
+
+## Instrument Sans
+
+Instrument Sans Project Authors © 2022. The variable Latin WOFF2 is from the [Google Fonts distribution](https://fonts.google.com/specimen/Instrument+Sans). The [SIL Open Font License 1.1 notice](public/fonts/instrument-sans-OFL.txt) ships with the font.
+
+## Wikipe-tan
+
+[Wikipe-tan full length.svg](https://commons.wikimedia.org/wiki/File:Wikipe-tan_full_length.svg) by Kasuga, vector redraw by Editor at Large, under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The [adapted SVG](src/features/cel-shading/wikipe-tan.svg) is shared under the same license. MiniPaint Lab cropped the image and added the hair palette and clipped highlight.
+## SVGs de Dragon Ball fornecidos via Figma
+
+`Kid Goku.svg` e `Goku SVG.svg` foram vetorizados no Figma pelo responsável pelo Pincel Guia e exportados para o projeto. Goku é um personagem de Dragon Ball. O crédito desta seção refere-se à autoria dos vetores.
